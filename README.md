@@ -29,6 +29,24 @@ To publish `sdk-samples` as its own remote and attach it back as a submodule, se
 
 Use a different port by setting **`PORT`** in `.env` (where supported) or your shell.
 
+## Clone only one sample (sparse checkout)
+
+You can clone this repository but **check out a single language folder** in your working tree (Git still fetches repo metadata, but you only materialize the paths you need):
+
+```bash
+git clone --filter=blob:none --sparse https://github.com/sibabale/rails-sdk-samples.git
+cd rails-sdk-samples
+git sparse-checkout set typescript
+```
+
+Replace `typescript` with `go`, `java`, `kotlin`, or `csharp` as needed. To add another folder later:
+
+```bash
+git sparse-checkout add go
+```
+
+**Note:** Samples are still wired to build against the generated SDKs inside the **Rails monorepo** (`mvp/rails-sdks/`). If you use a sparse clone **without** the parent repo, follow that language’s README for using **published** packages or adjust local paths.
+
 ## Credentials (all samples)
 
 | Variable            | Required | Description |
