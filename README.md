@@ -9,13 +9,13 @@ You do not get access to our databases or internal services.
 
 ## Where to run these samples
 
-These projects **link to the generated SDKs** in the parent Rails monorepo (`mvp/rails-sdks/` via Gradle `includeBuild`, Go `replace`, npm `file:`, or .NET `ProjectReference`). **Clone the main Rails repository** and work from the repo root so both `sdk-samples/` and `mvp/rails-sdks/` exist. If `sdk-samples` is a **git submodule**, initialize it after clone:
+These projects **link to the generated SDKs** in the parent Rails monorepo (`mvp/rails-sdks/` via Gradle `includeBuild`, Go `replace`, npm `file:`, or .NET `ProjectReference`). **Clone the main Rails repository** and work from the repo root so both `mvp/sdk-samples/` and `mvp/rails-sdks/` exist. If `mvp/sdk-samples` is a **git submodule**, initialize it after clone:
 
 ```bash
 git submodule update --init --recursive
 ```
 
-To publish `sdk-samples` as its own remote and attach it back as a submodule, see the root [README](../README.md) section **SDK sample apps** and [mvp/scripts/publish-sdk-samples-submodule.sh](../mvp/scripts/publish-sdk-samples-submodule.sh).
+To publish these samples as their own remote and attach them back as a submodule, see the root [README](../../README.md) section **SDK sample apps** and [mvp/scripts/publish-sdk-samples-submodule.sh](../scripts/publish-sdk-samples-submodule.sh).
 
 ## Quick index
 
@@ -73,4 +73,4 @@ If forwarded/proxy calls fail with **TLS / certificate / PKIX** errors against a
 
 ## Rails maintainers — full API on your laptop
 
-Bank integrators should **not** follow this. For Postgres, users service, accounts service, etc., use [mvp/docker-compose.sdk.yml](../mvp/docker-compose.sdk.yml), [mvp/scripts/prepare-local-db.sh](../mvp/scripts/prepare-local-db.sh), and READMEs under `mvp/api/`.
+Bank integrators should **not** follow this. For Postgres, users service, accounts service, etc., use [mvp/docker-compose.sdk.yml](../docker-compose.sdk.yml), [mvp/scripts/prepare-local-db.sh](../scripts/prepare-local-db.sh), and READMEs under `mvp/api/`.

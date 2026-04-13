@@ -14,7 +14,7 @@ dependencyResolutionManagement {
     }
 }
 
-includeBuild("../../mvp/rails-sdks/sdks/rails-kotlin") {
+includeBuild("../../rails-sdks/sdks/rails-kotlin") {
     dependencySubstitution {
         substitute(module("com.rails.api:rails-kotlin")).using(project(":rails-kotlin"))
     }

@@ -12,7 +12,7 @@ A small JVM server that calls the Rails API with the official Kotlin SDK. You on
 ## Install dependencies
 
 ```bash
-cd sdk-samples/kotlin
+cd mvp/sdk-samples/kotlin
 ./gradlew --version   # downloads wrapper if needed; first run may fetch dependencies
 ```
 

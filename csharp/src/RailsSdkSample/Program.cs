@@ -80,7 +80,7 @@ static string LoadOpenApiSpecJson()
     var path = Path.Combine(AppContext.BaseDirectory, "openapi-source.json");
     if (!File.Exists(path))
         throw new InvalidOperationException(
-            $"OpenAPI file not found at {path}. Ensure sdk-samples/kotlin is present and the project copies openapi-source.json."
+            $"OpenAPI file not found at {path}. Ensure mvp/sdk-samples/kotlin is present and the project copies openapi-source.json."
         );
     var raw = File.ReadAllText(path);
     var node = JsonNode.Parse(raw)?.AsObject()

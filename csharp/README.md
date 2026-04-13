@@ -12,7 +12,7 @@ An ASP.NET Core app that calls the Rails API with the official C# SDK. You only 
 ## Install dependencies
 
 ```bash
-cd sdk-samples/csharp
+cd mvp/sdk-samples/csharp
 dotnet restore RailsSdkSample.sln
 ```
 

@@ -12,7 +12,7 @@ A small JVM server that calls the Rails API with the official Java SDK (OkHttp).
 ## Install dependencies
 
 ```bash
-cd sdk-samples/java
+cd mvp/sdk-samples/java
 ./gradlew --version
 ```
 

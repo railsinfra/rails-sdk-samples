@@ -12,7 +12,7 @@ An HTTP server (and optional CLI) that calls the Rails API with the official Go 
 ## Install dependencies
 
 ```bash
-cd sdk-samples/go
+cd mvp/sdk-samples/go
 go mod download
 ```
 

@@ -7,12 +7,12 @@ A small Express server that calls the Rails API with the official TypeScript SDK
 ## Prerequisites
 
 - **Node.js** 18.17+ (20+ recommended)
-- This repository checked out with **`mvp/rails-sdks/`** present (the sample depends on `file:../../mvp/rails-sdks/sdks/rails-typescript`). See the [root SDK samples README](../README.md).
+- This repository checked out with **`mvp/rails-sdks/`** present (the sample depends on `file:../../rails-sdks/sdks/rails-typescript`). See the [root SDK samples README](../README.md).
 
 ## Install dependencies
 
 ```bash
-cd sdk-samples/typescript
+cd mvp/sdk-samples/typescript
 npm install
 ```
 
