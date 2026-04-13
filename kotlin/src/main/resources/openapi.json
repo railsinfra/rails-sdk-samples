@@ -1,0 +1,418 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Rails Kotlin SDK sample",
+    "version": "1.0.0",
+    "description": "Local demo server that calls the Rails API using `RAILS_BASE_URL` and `RAILS_API_KEY` from the process environment. You do not send the API key from the browser; set headers like `X-Environment` where noted. Non-v1 paths (`/api/...`) are aliases of `/api/v1/...`.\n\n**Amounts** are in **minor units** (e.g. cents) unless sent as a decimal string (e.g. `\"100.00\"` → 10000)."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "This process (e.g. http://localhost:8081)"
+    }
+  ],
+  "tags": [
+    { "name": "Health", "description": "Sample server only" },
+    { "name": "Accounts", "description": "SDK or forwarded to Rails accounts API" },
+    { "name": "Transactions", "description": "SDK transactions" },
+    { "name": "Raw", "description": "Passthrough GET/POST to Rails (path query param)" }
+  ],
+  "components": {
+    "parameters": {
+      "XEnvironment": {
+        "name": "X-Environment",
+        "in": "header",
+        "required": true,
+        "schema": { "type": "string", "enum": ["sandbox", "production"], "example": "sandbox" },
+        "description": "Required on most Rails account routes."
+      },
+      "XEnvironmentOptional": {
+        "name": "X-Environment",
+        "in": "header",
+        "required": false,
+        "schema": { "type": "string", "enum": ["sandbox", "production"], "example": "sandbox" },
+        "description": "Forwarded when sandbox or production; otherwise omitted upstream."
+      },
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": false,
+        "schema": { "type": "string", "example": "dep-01J8QZYX-unique" },
+        "description": "Optional; sample generates one if omitted."
+      }
+    },
+    "schemas": {
+      "AccountId": {
+        "type": "string",
+        "format": "uuid",
+        "example": "11111111-1111-4111-8111-111111111111"
+      },
+      "CreateAccountHolder": {
+        "type": "object",
+        "required": ["account_type", "email"],
+        "properties": {
+          "account_type": { "type": "string", "enum": ["checking", "saving"], "example": "checking" },
+          "email": { "type": "string", "format": "email", "example": "holder@bank.com" },
+          "first_name": { "type": "string", "example": "Ada" },
+          "last_name": { "type": "string", "example": "Lovelace" },
+          "currency": { "type": "string", "example": "USD" },
+          "organization_id": { "type": "string", "format": "uuid", "nullable": true },
+          "admin_user_id": { "type": "string", "format": "uuid", "nullable": true }
+        }
+      },
+      "CreateAccountLegacy": {
+        "type": "object",
+        "required": ["account_type", "user_id"],
+        "properties": {
+          "account_type": { "type": "string", "enum": ["checking", "saving"], "example": "checking" },
+          "user_id": { "type": "string", "format": "uuid", "example": "22222222-2222-4222-8222-222222222222" },
+          "currency": { "type": "string", "example": "USD" },
+          "organization_id": { "type": "string", "format": "uuid" },
+          "admin_user_id": { "type": "string", "format": "uuid" }
+        }
+      },
+      "UpdateAccountStatusBody": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["active", "suspended", "closed"],
+            "example": "suspended"
+          }
+        }
+      },
+      "DepositBody": {
+        "type": "object",
+        "required": ["amount"],
+        "properties": {
+          "amount": {
+            "description": "Minor units (cents) as integer, or string integer / decimal (e.g. \"50.25\" → 5025)",
+            "oneOf": [{ "type": "integer", "example": 10000 }, { "type": "string", "example": "100.00" }]
+          },
+          "description": { "type": "string", "example": "Test deposit" },
+          "external_recipient_id": { "type": "string", "example": "ext-recipient-001" },
+          "reference_id": { "type": "string", "format": "uuid", "example": "33333333-3333-4333-8333-333333333333" }
+        }
+      },
+      "WithdrawBody": {
+        "type": "object",
+        "required": ["amount"],
+        "properties": {
+          "amount": {
+            "description": "Minor units (cents) or string decimal",
+            "oneOf": [{ "type": "integer", "example": 5000 }, { "type": "string", "example": "50.00" }]
+          },
+          "description": { "type": "string", "example": "Sample withdraw" },
+          "external_recipient_id": { "type": "string" },
+          "reference_id": { "type": "string", "format": "uuid" }
+        }
+      },
+      "TransferBody": {
+        "type": "object",
+        "required": ["to_account_id", "amount"],
+        "properties": {
+          "to_account_id": { "type": "string", "format": "uuid", "example": "44444444-4444-4444-8444-444444444444" },
+          "amount": {
+            "oneOf": [{ "type": "integer", "example": 2500 }, { "type": "string", "example": "25.00" }]
+          },
+          "description": { "type": "string", "example": "Internal transfer" },
+          "external_recipient_id": { "type": "string" },
+          "reference_id": { "type": "string", "format": "uuid" }
+        }
+      },
+      "GenericJson": {
+        "type": "object",
+        "additionalProperties": true,
+        "example": { "account_type": "checking", "email": "you@example.com", "first_name": "Test", "last_name": "User" }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Sample liveness",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object", "properties": { "status": { "type": "string", "example": "ok" } } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts": {
+      "get": {
+        "tags": ["Accounts"],
+        "summary": "List accounts (forwarded)",
+        "parameters": [
+          { "$ref": "#/components/parameters/XEnvironmentOptional" },
+          {
+            "name": "user_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "example": "22222222-2222-4222-8222-222222222222",
+            "description": "One of user_id, organization_id, or admin_user_id is required upstream."
+          },
+          {
+            "name": "organization_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "example": "55555555-5555-4555-8555-555555555555"
+          },
+          {
+            "name": "admin_user_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" },
+            "example": "66666666-6666-4666-8666-666666666666"
+          },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "example": 1 } },
+          { "name": "per_page", "in": "query", "schema": { "type": "integer", "example": 10 } }
+        ],
+        "responses": { "200": { "description": "Rails JSON" } }
+      },
+      "post": {
+        "tags": ["Accounts"],
+        "summary": "Create account (forwarded)",
+        "parameters": [
+          {
+            "name": "X-Environment",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "enum": ["sandbox", "production"], "default": "sandbox", "example": "sandbox" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/CreateAccountHolder" },
+                  { "$ref": "#/components/schemas/CreateAccountLegacy" }
+                ]
+              },
+              "examples": {
+                "holder": {
+                  "summary": "Holder (email) + API key path",
+                  "value": {
+                    "account_type": "checking",
+                    "email": "holder@bank.com",
+                    "first_name": "Ada",
+                    "last_name": "Lovelace",
+                    "currency": "USD"
+                  }
+                },
+                "legacyUser": {
+                  "summary": "Legacy (platform user_id)",
+                  "value": {
+                    "account_type": "checking",
+                    "user_id": "22222222-2222-4222-8222-222222222222",
+                    "currency": "USD"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Created" }, "200": { "description": "Rails response" } }
+      }
+    },
+    "/api/v1/accounts/{id}": {
+      "get": {
+        "tags": ["Accounts"],
+        "summary": "Get account (Kotlin SDK retrieve)",
+        "parameters": [
+          { "$ref": "#/components/parameters/XEnvironment" },
+          { "name": "id", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/AccountId" } }
+        ],
+        "responses": { "200": { "description": "Account" } }
+      },
+      "delete": {
+        "tags": ["Accounts"],
+        "summary": "Close account (Kotlin SDK)",
+        "parameters": [
+          { "$ref": "#/components/parameters/XEnvironment" },
+          { "name": "id", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/AccountId" } }
+        ],
+        "responses": { "200": { "description": "Closed" } }
+      },
+      "patch": {
+        "tags": ["Accounts"],
+        "summary": "Update status (Kotlin SDK)",
+        "parameters": [
+          { "$ref": "#/components/parameters/XEnvironment" },
+          { "name": "id", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/AccountId" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateAccountStatusBody" },
+              "example": { "status": "suspended" }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Updated" } }
+      }
+    },
+    "/api/v1/accounts/{id}/deposit": {
+      "post": {
+        "tags": ["Accounts"],
+        "summary": "Deposit (forwarded)",
+        "parameters": [
+          { "$ref": "#/components/parameters/XEnvironmentOptional" },
+          { "$ref": "#/components/parameters/IdempotencyKey" },
+          { "name": "id", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/AccountId" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DepositBody" },
+              "example": {
+                "amount": 10000,
+                "description": "Sample deposit (100.00 in cents)"
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Rails JSON" } }
+      }
+    },
+    "/api/v1/accounts/{id}/transfer": {
+      "post": {
+        "tags": ["Accounts"],
+        "summary": "Transfer (forwarded)",
+        "parameters": [
+          { "$ref": "#/components/parameters/XEnvironmentOptional" },
+          { "$ref": "#/components/parameters/IdempotencyKey" },
+          { "name": "id", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/AccountId" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TransferBody" },
+              "example": {
+                "to_account_id": "44444444-4444-4444-8444-444444444444",
+                "amount": 5000,
+                "description": "Transfer 50.00 (minor units)"
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Rails JSON" } }
+      }
+    },
+    "/api/v1/accounts/{id}/withdraw": {
+      "post": {
+        "tags": ["Accounts"],
+        "summary": "Withdraw (forwarded)",
+        "parameters": [
+          { "$ref": "#/components/parameters/XEnvironmentOptional" },
+          { "$ref": "#/components/parameters/IdempotencyKey" },
+          { "name": "id", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/AccountId" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WithdrawBody" },
+              "example": {
+                "amount": "25.00",
+                "description": "Withdraw using decimal string"
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Rails JSON" } }
+      }
+    },
+    "/api/v1/accounts/{accountId}/transactions": {
+      "get": {
+        "tags": ["Transactions"],
+        "summary": "List transactions by account (Kotlin SDK)",
+        "parameters": [
+          { "$ref": "#/components/parameters/XEnvironment" },
+          {
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/AccountId" }
+          },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "example": 20 } }
+        ],
+        "responses": { "200": { "description": "List" } }
+      }
+    },
+    "/api/v1/transactions/{id}": {
+      "get": {
+        "tags": ["Transactions"],
+        "summary": "Get transaction (Kotlin SDK)",
+        "parameters": [
+          { "$ref": "#/components/parameters/XEnvironment" },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "example": "77777777-7777-4777-8777-777777777777" }
+          }
+        ],
+        "responses": { "200": { "description": "Transaction" } }
+      }
+    },
+    "/api/v1/raw/get": {
+      "get": {
+        "tags": ["Raw"],
+        "summary": "Proxy GET to Rails",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "schema": { "type": "string", "example": "api/v1/accounts?user_id=22222222-2222-4222-8222-222222222222" },
+            "description": "Path and optional query string under base URL (no leading slash on path segment before `?`)."
+          }
+        ],
+        "responses": { "200": { "description": "Upstream body" } }
+      }
+    },
+    "/api/v1/raw/post": {
+      "post": {
+        "tags": ["Raw"],
+        "summary": "Proxy POST to Rails",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "schema": { "type": "string", "example": "api/v1/accounts" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GenericJson" },
+              "examples": {
+                "createHolder": {
+                  "summary": "POST create account (holder)",
+                  "value": {
+                    "account_type": "checking",
+                    "email": "api-explorer@bank.com",
+                    "first_name": "API",
+                    "last_name": "Explorer",
+                    "currency": "USD"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Upstream body" } }
+      }
+    }
+  }
+}

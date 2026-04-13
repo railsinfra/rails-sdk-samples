@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/../.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../mvp/api/accounts" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../mvp/api/ledger" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../mvp/api/users" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../mvp/rails-client-server" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../mvp/rails-docs" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../mvp/rails-web" vcs="Git" />
+  </component>
+</project>

@@ -1,0 +1,10 @@
+**/.gradle/
+**/build/
+**/bin/
+**/.env
+!**/.env.example
+
+# Dependencies / local build output
+typescript/node_modules/
+typescript/dist/
+**/obj/
