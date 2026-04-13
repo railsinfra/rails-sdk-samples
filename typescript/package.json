@@ -2,7 +2,7 @@
   "name": "rails-sdk-sample-typescript",
   "version": "1.0.0",
   "private": true,
-  "description": "Local demo server that calls the Rails API using RAILS_BASE_URL and RAILS_API_KEY (mirrors sdk-samples/kotlin patterns).",
+  "description": "Local demo server that calls the Rails API using RAILS_BASE_URL and RAILS_API_KEY (mirrors samples/kotlin patterns).",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
@@ -13,7 +13,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "rails": "file:../../rails-sdks/sdks/rails-typescript",
+    "rails": "file:../../sdks/rails-typescript",
     "swagger-ui-express": "^5.0.1",
     "undici": "^6.21.3"
   },

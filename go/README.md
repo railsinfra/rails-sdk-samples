@@ -7,14 +7,18 @@ An HTTP server (and optional CLI) that calls the Rails API with the official Go 
 ## Prerequisites
 
 - **Go** 1.22+
-- This repository checked out with **`mvp/rails-sdks/sdks/rails-go`** (`replace` in `go.mod`). See the [root SDK samples README](../README.md).
+- **Local SDK from source:** `go.mod` uses a `replace` that points at the generated Go SDK inside the **Rails monorepo** (`mvp/rails-sdks/sdks/rails-go`). That path only exists when this repo is checked out as part of that monorepo (for example at `mvp/rails-sdks/samples`). For a **standalone** clone of `rails-sdk-samples` only, either adjust `replace` to your SDK checkout or use a published module if available — see the [root SDK samples README](../README.md).
 
 ## Install dependencies
 
+From the **`rails-sdk-samples` repository root** (standalone clone or submodule — there is no `mvp/` directory inside this repo):
+
 ```bash
-cd mvp/sdk-samples/go
+cd go
 go mod download
 ```
+
+*If you use the full Rails monorepo, this folder is at `mvp/rails-sdks/samples/go` from the monorepo root.*
 
 ## Credentials
 

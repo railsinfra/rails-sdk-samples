@@ -11,4 +11,4 @@ require (
 	github.com/tidwall/sjson v1.2.5 // indirect
 )
 
-replace github.com/stainless-sdks/rails-go => ../../rails-sdks/sdks/rails-go
+replace github.com/stainless-sdks/rails-go => ../../sdks/rails-go

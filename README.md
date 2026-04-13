@@ -9,13 +9,17 @@ You do not get access to our databases or internal services.
 
 ## Where to run these samples
 
-These projects **link to the generated SDKs** in the parent Rails monorepo (`mvp/rails-sdks/` via Gradle `includeBuild`, Go `replace`, npm `file:`, or .NET `ProjectReference`). **Clone the main Rails repository** and work from the repo root so both `mvp/sdk-samples/` and `mvp/rails-sdks/` exist. If `mvp/sdk-samples` is a **git submodule**, initialize it after clone:
+**This repository (`rails-sdk-samples`)** has **no `mvp/` directory**. Language samples live at the repo root (`go/`, `java/`, `typescript/`, …). Use `cd go` (etc.) from the root of your clone.
+
+**Full Rails monorepo:** the same tree is embedded at **`mvp/rails-sdks/samples/`** (sibling of **`mvp/rails-sdks/sdks/`**). The checked-in build wiring (`includeBuild`, `replace`, `file:`, `ProjectReference`) points at **`../sdks/<language-sdk>`** from each sample folder so builds use the generated SDKs next door.
+
+If `mvp/rails-sdks/samples` is a **git submodule** (remote **`rails-sdk-samples`**), initialize it after clone:
 
 ```bash
 git submodule update --init --recursive
 ```
 
-To publish these samples as their own remote and attach them back as a submodule, see the root [README](../../README.md) section **SDK sample apps** and [mvp/scripts/publish-sdk-samples-submodule.sh](../scripts/publish-sdk-samples-submodule.sh).
+To publish these samples as their own remote and attach them back as a submodule, see the root [README](../../../README.md) section **SDK sample apps** and [mvp/scripts/publish-sdk-samples-submodule.sh](../../scripts/publish-sdk-samples-submodule.sh).
 
 ## Quick index
 
@@ -73,4 +77,4 @@ If forwarded/proxy calls fail with **TLS / certificate / PKIX** errors against a
 
 ## Rails maintainers — full API on your laptop
 
-Bank integrators should **not** follow this. For Postgres, users service, accounts service, etc., use [mvp/docker-compose.sdk.yml](../docker-compose.sdk.yml), [mvp/scripts/prepare-local-db.sh](../scripts/prepare-local-db.sh), and READMEs under `mvp/api/`.
+Bank integrators should **not** follow this. For Postgres, users service, accounts service, etc., use [mvp/docker-compose.sdk.yml](../../docker-compose.sdk.yml), [mvp/scripts/prepare-local-db.sh](../../scripts/prepare-local-db.sh), and READMEs under `mvp/api/`.

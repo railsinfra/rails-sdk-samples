@@ -7,20 +7,26 @@ A small Express server that calls the Rails API with the official TypeScript SDK
 ## Prerequisites
 
 - **Node.js** 18.17+ (20+ recommended)
-- This repository checked out with **`mvp/rails-sdks/`** present (the sample depends on `file:../../rails-sdks/sdks/rails-typescript`). See the [root SDK samples README](../README.md).
+- **Local SDK from source:** `package.json` uses `file:../../sdks/rails-typescript`, which matches this folder at **`mvp/rails-sdks/samples/typescript`** inside the Rails monorepo (sibling of `mvp/rails-sdks/sdks/`). Checked out alone, `rails-sdk-samples` has no `mvp/` tree — use the published `rails` package from npm or change the `file:` path; see the [root SDK samples README](../README.md).
 
 ## Install dependencies
 
+From the **`rails-sdk-samples` repository root**:
+
 ```bash
-cd mvp/sdk-samples/typescript
+cd typescript
 npm install
 ```
 
-If the local SDK has no build output yet, from the repo root:
+If you are in the **Rails monorepo** and the SDK package has never been built:
 
 ```bash
 cd mvp/rails-sdks/sdks/rails-typescript && npm install && npm run build
 ```
+
+*(Run that from the Rails repository root, not from `rails-sdk-samples`.)*
+
+*Monorepo path to this app from the Rails repo root: `mvp/rails-sdks/samples/typescript`.*
 
 ## Credentials
 
