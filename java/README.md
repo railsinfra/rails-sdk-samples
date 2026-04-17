@@ -7,7 +7,7 @@ A small JVM server that calls the Rails API with the official Java SDK (OkHttp).
 ## Prerequisites
 
 - **JDK** 17+
-- **Local SDK from source:** Gradle `includeBuild` expects the generated Java SDK under **`mvp/rails-sdks/sdks/rails-java`** in the **Rails monorepo**, which exists when this repo lives inside that tree (for example at `mvp/rails-sdks/samples`). A standalone clone of `rails-sdk-samples` alone does not contain `mvp/` — use published packages or point the composite build at your SDK checkout; see the [root SDK samples README](../README.md).
+- **Local SDK from source:** Gradle `includeBuild` expects the generated Java SDK under **`src/rails-sdks/sdks/rails-java`** in the **Rails monorepo**, which exists when this repo lives inside that tree (for example at `src/rails-sdks/samples`). A standalone clone of `rails-sdk-samples` alone does not contain the monorepo `src/rails-sdks/` layout — use published packages or point the composite build at your SDK checkout; see the [root SDK samples README](../README.md).
 
 ## Install dependencies
 
@@ -18,7 +18,7 @@ cd java
 ./gradlew --version
 ```
 
-*Monorepo path from the Rails repo root: `mvp/rails-sdks/samples/java`.*
+*Monorepo path from the Rails repo root: `src/rails-sdks/samples/java`.*
 
 ## Credentials
 

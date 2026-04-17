@@ -9,17 +9,17 @@ You do not get access to our databases or internal services.
 
 ## Where to run these samples
 
-**This repository (`rails-sdk-samples`)** has **no `mvp/` directory**. Language samples live at the repo root (`go/`, `java/`, `typescript/`, …). Use `cd go` (etc.) from the root of your clone.
+**This repository (`rails-sdk-samples`)** uses a **flat layout** at the repo root (`go/`, `java/`, `typescript/`, …), not the `src/rails-sdks/samples/...` paths used when embedded in the Rails monorepo. Use `cd go` (etc.) from the root of your clone.
 
-**Full Rails monorepo:** the same tree is embedded at **`mvp/rails-sdks/samples/`** (sibling of **`mvp/rails-sdks/sdks/`**). The checked-in build wiring (`includeBuild`, `replace`, `file:`, `ProjectReference`) points at **`../sdks/<language-sdk>`** from each sample folder so builds use the generated SDKs next door.
+**Full Rails monorepo:** the same tree is embedded at **`src/rails-sdks/samples/`** (sibling of **`src/rails-sdks/sdks/`**). The checked-in build wiring (`includeBuild`, `replace`, `file:`, `ProjectReference`) points at **`../sdks/<language-sdk>`** from each sample folder so builds use the generated SDKs next door.
 
-If `mvp/rails-sdks/samples` is a **git submodule** (remote **`rails-sdk-samples`**), initialize it after clone:
+If `src/rails-sdks/samples` is a **git submodule** (remote **`rails-sdk-samples`**), initialize it after clone:
 
 ```bash
 git submodule update --init --recursive
 ```
 
-To publish these samples as their own remote and attach them back as a submodule, see the root [README](../../../README.md) section **SDK sample apps** and [mvp/scripts/publish-sdk-samples-submodule.sh](../../scripts/publish-sdk-samples-submodule.sh).
+To publish these samples as their own remote and attach them back as a submodule, see the root [README](../../../README.md) section **SDK sample apps** and [src/scripts/publish-sdk-samples-submodule.sh](../../scripts/publish-sdk-samples-submodule.sh).
 
 ## Quick index
 
@@ -49,7 +49,7 @@ Replace `typescript` with `go`, `java`, `kotlin`, or `csharp` as needed. To add 
 git sparse-checkout add go
 ```
 
-**Note:** Samples are still wired to build against the generated SDKs inside the **Rails monorepo** (`mvp/rails-sdks/`). If you use a sparse clone **without** the parent repo, follow that language’s README for using **published** packages or adjust local paths.
+**Note:** Samples are still wired to build against the generated SDKs inside the **Rails monorepo** (`src/rails-sdks/`). If you use a sparse clone **without** the parent repo, follow that language’s README for using **published** packages or adjust local paths.
 
 ## Credentials (all samples)
 
@@ -77,4 +77,4 @@ If forwarded/proxy calls fail with **TLS / certificate / PKIX** errors against a
 
 ## Rails maintainers — full API on your laptop
 
-Bank integrators should **not** follow this. For Postgres, users service, accounts service, etc., use [mvp/docker-compose.sdk.yml](../../docker-compose.sdk.yml), [mvp/scripts/prepare-local-db.sh](../../scripts/prepare-local-db.sh), and READMEs under `mvp/api/`.
+Bank integrators should **not** follow this. For Postgres, users service, accounts service, etc., use [src/docker-compose.sdk.yml](../../docker-compose.sdk.yml), [src/scripts/prepare-local-db.sh](../../scripts/prepare-local-db.sh), and READMEs under `src/api/`.

@@ -13,7 +13,7 @@ function loadOpenApiSpec(): Record<string, unknown> {
   const openapiPath = join(__dirname, '..', '..', 'kotlin', 'src', 'main', 'resources', 'openapi.json');
   if (!existsSync(openapiPath)) {
     throw new Error(
-      `OpenAPI file not found at ${openapiPath}. Ensure mvp/rails-sdks/samples/kotlin is present in the repo.`,
+      `OpenAPI file not found at ${openapiPath}. Ensure src/rails-sdks/samples/kotlin is present in the repo.`,
     );
   }
   const raw = JSON.parse(readFileSync(openapiPath, 'utf8')) as Record<string, unknown>;
