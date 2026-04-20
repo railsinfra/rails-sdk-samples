@@ -7,28 +7,18 @@ function normalizeBaseUrl(raw: string): string {
   return `https://${t}`;
 }
 
-/** Value for `X-Environment` on Rails account API calls (required by the backend). */
-export type RailsXEnvironment = 'sandbox' | 'production';
-
-export function defaultRailsXEnvironmentFromEnv(): RailsXEnvironment {
-  const raw = (process.env.RAILS_X_ENVIRONMENT ?? 'sandbox').trim().toLowerCase();
-  return raw === 'production' ? 'production' : 'sandbox';
-}
+/** Sandboxed Rails API calls in this sample (always `sandbox`). */
+export type RailsXEnvironment = 'sandbox';
 
 /**
- * Prefer the incoming request header (Swagger UI), else the configured default.
- * Forwarded/proxy routes already set `X-Environment`; SDK routes must add it explicitly.
+ * This sample always uses the sandbox environment for account API calls.
+ * Forwarded/proxy routes set `X-Environment: sandbox`; SDK routes use the same.
  */
 export function resolveRailsXEnvironment(
-  req: { headers: Record<string, string | string[] | undefined> },
-  fallback: RailsXEnvironment,
+  _req: { headers: Record<string, string | string[] | undefined> },
+  _fallback: RailsXEnvironment,
 ): RailsXEnvironment {
-  const raw = req.headers['x-environment'];
-  const first = Array.isArray(raw) ? raw[0] : raw;
-  const v = typeof first === 'string' ? first.trim().toLowerCase() : '';
-  if (v === 'production') return 'production';
-  if (v === 'sandbox') return 'sandbox';
-  return fallback;
+  return 'sandbox';
 }
 
 export function loadConfig() {
@@ -38,13 +28,11 @@ export function loadConfig() {
   const insecureProxyTls =
     process.env.RAILS_INSECURE_SSL?.toLowerCase() === 'true' ||
     process.env.RAILS_INSECURE_SSL === '1';
-  const railsXEnvironment = defaultRailsXEnvironmentFromEnv();
 
   return {
     baseURL,
     apiKey,
     port: Number.isFinite(port) && port > 0 ? port : 8081,
     insecureProxyTls,
-    railsXEnvironment,
   };
 }

@@ -3,7 +3,7 @@
   "info": {
     "title": "Rails Java SDK sample",
     "version": "1.0.0",
-    "description": "Local demo server that calls the Rails API using `RAILS_BASE_URL` and `RAILS_API_KEY` from the process environment. You do not send the API key from the browser; set headers like `X-Environment` where noted. Non-v1 paths (`/api/...`) are aliases of `/api/v1/...`.\n\n**Amounts** are in **minor units** (e.g. cents) unless sent as a decimal string (e.g. `\"100.00\"` → 10000)."
+    "description": "Local demo server that calls the Rails API using `RAILS_BASE_URL` and `RAILS_API_KEY` from the process environment. You do not send the API key from the browser. Non-v1 paths (`/api/...`) are aliases of `/api/v1/...`.\n\n**Amounts** are in **minor units** (e.g. cents) unless sent as a decimal string (e.g. `\"100.00\"` → 10000)."
   },
   "servers": [
     {
@@ -23,15 +23,15 @@
         "name": "X-Environment",
         "in": "header",
         "required": true,
-        "schema": { "type": "string", "enum": ["sandbox", "production"], "example": "sandbox" },
+        "schema": { "type": "string", "enum": ["sandbox"], "example": "sandbox" },
         "description": "Required on most Rails account routes."
       },
       "XEnvironmentOptional": {
         "name": "X-Environment",
         "in": "header",
         "required": false,
-        "schema": { "type": "string", "enum": ["sandbox", "production"], "example": "sandbox" },
-        "description": "Forwarded when sandbox or production; otherwise omitted upstream."
+        "schema": { "type": "string", "enum": ["sandbox"], "example": "sandbox" },
+        "description": "This sample always uses sandbox."
       },
       "IdempotencyKey": {
         "name": "Idempotency-Key",
@@ -183,7 +183,7 @@
             "name": "X-Environment",
             "in": "header",
             "required": false,
-            "schema": { "type": "string", "enum": ["sandbox", "production"], "default": "sandbox", "example": "sandbox" }
+            "schema": { "type": "string", "enum": ["sandbox"], "default": "sandbox", "example": "sandbox" }
           }
         ],
         "requestBody": {

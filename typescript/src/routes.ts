@@ -1,7 +1,7 @@
 import type { Application, Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
 import Rails from 'rails';
-import { resolveRailsXEnvironment, type RailsXEnvironment } from './config';
+import type { RailsXEnvironment } from './config';
 import { HttpError } from './errors';
 
 type RailsClient = InstanceType<typeof Rails>;
@@ -11,7 +11,6 @@ export interface RouteDeps {
   apiKey: string;
   client: RailsClient;
   proxyFetch: typeof fetch;
-  railsXEnvironment: RailsXEnvironment;
 }
 
 function asyncHandler(
@@ -30,6 +29,12 @@ function trimBase(u: string): string {
   return u.replace(/\/$/, '');
 }
 
+const SANDBOX_ENV: RailsXEnvironment = 'sandbox';
+
+function sdkEnvHeaders(): { 'X-Environment': RailsXEnvironment } {
+  return { 'X-Environment': SANDBOX_ENV };
+}
+
 async function forwardResponse(
   res: Response,
   proxyFetch: typeof fetch,
@@ -41,35 +46,29 @@ async function forwardResponse(
   res.status(upstream.status).type('application/json').send(text);
 }
 
-function sdkEnvHeaders(req: Request, fallback: RailsXEnvironment): { 'X-Environment': RailsXEnvironment } {
-  return { 'X-Environment': resolveRailsXEnvironment(req, fallback) };
-}
-
 export function registerRoutes(app: Application, deps: RouteDeps): void {
-  const { baseURL, apiKey, client, proxyFetch, railsXEnvironment } = deps;
+  const { baseURL, apiKey, client, proxyFetch } = deps;
   const root = trimBase(baseURL);
 
   const postCreate = asyncHandler(async (req: Request, res: Response) => {
-    const xEnv = (req.headers['x-environment'] as string) || 'sandbox';
     await forwardResponse(res, proxyFetch, `${root}/api/v1/accounts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-API-Key': apiKey,
-        'X-Environment': xEnv,
+        'X-Environment': SANDBOX_ENV,
       },
       body: JSON.stringify(req.body ?? {}),
     });
   });
 
   const getListAccounts = asyncHandler(async (req: Request, res: Response) => {
-    const xEnv = (req.headers['x-environment'] as string) || 'sandbox';
     const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
     await forwardResponse(res, proxyFetch, `${root}/api/v1/accounts${qs}`, {
       method: 'GET',
       headers: {
         'X-API-Key': apiKey,
-        'X-Environment': xEnv,
+        'X-Environment': SANDBOX_ENV,
       },
     });
   });
@@ -85,13 +84,12 @@ export function registerRoutes(app: Application, deps: RouteDeps): void {
     const body = JSON.stringify(req.body ?? {});
     if (body === '{}' || body === 'null') throw new HttpError(400, 'missing body');
     const idempotencyKey = (req.headers['idempotency-key'] as string) || genIdempotencyKey('dep');
-    const xEnv = req.headers['x-environment'] as string | undefined;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'X-API-Key': apiKey,
       'Idempotency-Key': idempotencyKey,
+      'X-Environment': SANDBOX_ENV,
     };
-    if (xEnv === 'sandbox' || xEnv === 'production') headers['X-Environment'] = xEnv;
     await forwardResponse(res, proxyFetch, `${root}/api/v1/accounts/${id}/deposit`, {
       method: 'POST',
       headers,
@@ -105,13 +103,12 @@ export function registerRoutes(app: Application, deps: RouteDeps): void {
     const body = JSON.stringify(req.body ?? {});
     if (body === '{}' || body === 'null') throw new HttpError(400, 'missing body');
     const idempotencyKey = (req.headers['idempotency-key'] as string) || genIdempotencyKey('xfr');
-    const xEnv = req.headers['x-environment'] as string | undefined;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'X-API-Key': apiKey,
       'Idempotency-Key': idempotencyKey,
+      'X-Environment': SANDBOX_ENV,
     };
-    if (xEnv === 'sandbox' || xEnv === 'production') headers['X-Environment'] = xEnv;
     await forwardResponse(res, proxyFetch, `${root}/api/v1/accounts/${id}/transfer`, {
       method: 'POST',
       headers,
@@ -125,13 +122,12 @@ export function registerRoutes(app: Application, deps: RouteDeps): void {
     const body = JSON.stringify(req.body ?? {});
     if (body === '{}' || body === 'null') throw new HttpError(400, 'missing body');
     const idempotencyKey = (req.headers['idempotency-key'] as string) || genIdempotencyKey('wdr');
-    const xEnv = req.headers['x-environment'] as string | undefined;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'X-API-Key': apiKey,
       'Idempotency-Key': idempotencyKey,
+      'X-Environment': SANDBOX_ENV,
     };
-    if (xEnv === 'sandbox' || xEnv === 'production') headers['X-Environment'] = xEnv;
     await forwardResponse(res, proxyFetch, `${root}/api/v1/accounts/${id}/withdraw`, {
       method: 'POST',
       headers,
@@ -149,7 +145,7 @@ export function registerRoutes(app: Application, deps: RouteDeps): void {
   const getAccount = asyncHandler(async (req: Request, res: Response) => {
     const id = req.params.id;
     if (!id) throw new HttpError(400, 'missing id');
-    const data = await client.accounts.retrieve(id, { headers: sdkEnvHeaders(req, railsXEnvironment) });
+    const data = await client.accounts.retrieve(id, { headers: sdkEnvHeaders() });
     res.json(data);
   });
 
@@ -159,7 +155,7 @@ export function registerRoutes(app: Application, deps: RouteDeps): void {
   const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     const id = req.params.id;
     if (!id) throw new HttpError(400, 'missing id');
-    const data = await client.accounts.close(id, { headers: sdkEnvHeaders(req, railsXEnvironment) });
+    const data = await client.accounts.close(id, { headers: sdkEnvHeaders() });
     res.json(data);
   });
 
@@ -172,7 +168,7 @@ export function registerRoutes(app: Application, deps: RouteDeps): void {
     const body = req.body as { status?: string };
     if (!body?.status) throw new HttpError(400, 'status required');
     const status = body.status as 'active' | 'suspended' | 'closed';
-    const data = await client.accounts.updateStatus(id, { status }, { headers: sdkEnvHeaders(req, railsXEnvironment) });
+    const data = await client.accounts.updateStatus(id, { status }, { headers: sdkEnvHeaders() });
     res.json(data);
   });
 
@@ -211,7 +207,7 @@ export function registerRoutes(app: Application, deps: RouteDeps): void {
   const getTx = asyncHandler(async (req: Request, res: Response) => {
     const id = req.params.id;
     if (!id) throw new HttpError(400, 'missing id');
-    const data = await client.transactions.retrieve(id, { headers: sdkEnvHeaders(req, railsXEnvironment) });
+    const data = await client.transactions.retrieve(id, { headers: sdkEnvHeaders() });
     res.json(data);
   });
 
@@ -227,7 +223,7 @@ export function registerRoutes(app: Application, deps: RouteDeps): void {
     const data = await client.transactions.listByAccount(
       accountId,
       limit !== undefined && Number.isFinite(limit) ? { limit } : {},
-      { headers: sdkEnvHeaders(req, railsXEnvironment) },
+      { headers: sdkEnvHeaders() },
     );
     res.json(data);
   });

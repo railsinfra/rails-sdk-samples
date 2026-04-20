@@ -163,7 +163,6 @@ Sparse checkouts follow the same SDK rules as a full clone; use the language REA
 |-----------------------|----------|-------------|
 | `RAILS_BASE_URL`      | Yes      | Use the value from **`.env.example`** for that sample; do not change unless Rails gave you a different base URL. |
 | `RAILS_API_KEY`       | Yes      | Create at [railsinfra.com](https://railsinfra.com) after sign-in; set in `.env` (never commit real values). |
-| `RAILS_X_ENVIRONMENT` | No       | `sandbox` or `production` (default `sandbox`). |
 | `PORT`                | No       | Local server port (defaults in [When the sample is running](#when-the-sample-is-running)). |
 
 ---

@@ -29,7 +29,7 @@ function main(): void {
   const client = new Rails({
     apiKey: cfg.apiKey,
     baseURL: cfg.baseURL,
-    defaultHeaders: { 'X-Environment': cfg.railsXEnvironment },
+    defaultHeaders: { 'X-Environment': 'sandbox' },
   });
 
   const app = express();
@@ -47,7 +47,6 @@ function main(): void {
     apiKey: cfg.apiKey,
     client,
     proxyFetch,
-    railsXEnvironment: cfg.railsXEnvironment,
   });
 
   app.get('/openapi.json', (_req: Request, res: Response) => {

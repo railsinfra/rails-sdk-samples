@@ -23,7 +23,7 @@ func newInsecureTransport() *http.Transport {
 
 func newProxyHTTPClient() *http.Client {
 	if insecureTLS() {
-		log.Println("[rails-go-sample] outbound HTTP client: trust-all TLS ON (RAILS_INSECURE_SSL=true) — not for production")
+		log.Println("[rails-go-sample] outbound HTTP client: trust-all TLS ON (RAILS_INSECURE_SSL=true) — dev/staging only")
 		return &http.Client{Transport: newInsecureTransport()}
 	}
 	log.Println("[rails-go-sample] outbound HTTP client: default TLS (set RAILS_INSECURE_SSL=true if handshake/PKIX fails against a private CA)")

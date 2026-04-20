@@ -26,7 +26,7 @@ dotnet restore RailsSdkSample.sln
 cp .env.example .env
 ```
 
-Edit `.env`: keep **`RAILS_BASE_URL`** as in `.env.example` unless onboarding gave a different host; set **`RAILS_API_KEY`** from https://railsinfra.com (sign in, create a server API key). Optional: **`PORT`** (default `8081`), **`RAILS_X_ENVIRONMENT`**.
+Edit `.env`: keep **`RAILS_BASE_URL`** as in `.env.example` unless onboarding gave a different host; set **`RAILS_API_KEY`** from https://railsinfra.com (sign in, create a server API key). Optional: **`PORT`** (default `8081`).
 
 Dotnet loads `.env` via DotNetEnv on startup (see sample code).
 
