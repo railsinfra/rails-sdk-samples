@@ -26,7 +26,7 @@ go mod download
 cp .env.example .env
 ```
 
-Edit `.env`: **`RAILS_API_KEY`**, **`RAILS_BASE_URL`**, optional **`PORT`** (default **8083** for the HTTP sample).
+Edit `.env`: set **`RAILS_API_KEY`** (create at https://railsinfra.com after sign-in), keep **`RAILS_BASE_URL`** as in `.env.example` unless onboarding gave a different host, optional **`PORT`** (default **8083** for the HTTP sample).
 
 Load env vars into your shell (example for bash):
 

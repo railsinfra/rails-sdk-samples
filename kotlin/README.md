@@ -24,8 +24,10 @@ cd kotlin
 
 ```bash
 export RAILS_API_KEY='<your-api-key>'
-export RAILS_BASE_URL='https://your-api-host.example'
+export RAILS_BASE_URL='https://api.railsinfra.com'
 ```
+
+Sign in at https://railsinfra.com and create a server API key for **`RAILS_API_KEY`**. Use the same **`RAILS_BASE_URL`** rules as the [root README](../README.md#credentials-reference) (match other samples’ `.env.example` unless onboarding gave you a different host).
 
 Optional: **`RAILS_X_ENVIRONMENT`** (`sandbox` | `production`, default `sandbox`), **`PORT`** (default `8081`).
 
