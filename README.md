@@ -1,44 +1,148 @@
 # Rails SDK samples
 
-Official **reference apps** for banks and integrators. Each sample is a small HTTP server with **Swagger UI** so you can try routes against the real Rails API using only:
+Official **reference apps** for banks and integrators. Each sample is a small HTTP server with **Swagger UI** so you can try routes against the real Rails API using only **`RAILS_BASE_URL`** and **`RAILS_API_KEY`**.
 
-1. **`RAILS_BASE_URL`** — API host we give you (for example `https://www.api.dev.railsinfra.com`).
-2. **`RAILS_API_KEY`** — key provisioned for your institution.
+## What this project is / is not
 
-You do not get access to our databases or internal services.
+**This project is**
 
-## Where to run these samples
+- Small reference servers (TypeScript, Go, JVM, .NET) that call the public Rails HTTP API
+- **Swagger UI** and **`/openapi.json`** for exploring routes against a host you already have access to
+- **Local-dev friendly**: clone, configure env, run one process per language (no Docker Compose in this repo)
 
-**This repository (`rails-sdk-samples`)** uses a **flat layout** at the repo root (`go/`, `java/`, `typescript/`, …), not the `src/rails-sdks/samples/...` paths used when embedded in the Rails monorepo. Use `cd go` (etc.) from the root of your clone.
+**This project is not**
 
-**Full Rails monorepo:** the same tree is embedded at **`src/rails-sdks/samples/`** (sibling of **`src/rails-sdks/sdks/`**). The checked-in build wiring (`includeBuild`, `replace`, `file:`, `ProjectReference`) points at **`../sdks/<language-sdk>`** from each sample folder so builds use the generated SDKs next door.
+- A way to run Postgres, users, accounts, ledger, or other Rails internals on your machine
+- A hosted product or a substitute for credentials from Rails or your institution
+- The [rails-core](https://github.com/railsinfra/rails-core) monorepo (see [Need the full Rails API locally?](#need-the-full-rails-api-locally) if you work on the full stack)
 
-If `src/rails-sdks/samples` is a **git submodule** (remote **`rails-sdk-samples`**), initialize it after clone:
+---
+
+## Quick start
+
+### 1. Clone
 
 ```bash
-git submodule update --init --recursive
+git clone https://github.com/railsinfra/rails-sdk-samples.git
+cd rails-sdk-samples
 ```
 
-To publish these samples as their own remote and attach them back as a submodule, see the root [README](../../../README.md) section **SDK sample apps** and [src/scripts/publish-sdk-samples-submodule.sh](../../scripts/publish-sdk-samples-submodule.sh).
+Use your fork’s URL if you cloned from a fork.
 
-## Quick index
+### 2. Pick a language and open its folder
 
-| Language   | Folder        | Default port | README |
-|------------|---------------|--------------|--------|
-| TypeScript | `typescript/` | 8081         | [typescript/README.md](typescript/README.md) |
-| Kotlin     | `kotlin/`     | 8081         | [kotlin/README.md](kotlin/README.md) |
-| Java       | `java/`       | 8081         | [java/README.md](java/README.md) |
-| C#         | `csharp/`     | 8081         | [csharp/README.md](csharp/README.md) |
-| Go         | `go/`         | 8083         | [go/README.md](go/README.md) |
-
-Use a different port by setting **`PORT`** in `.env` (where supported) or your shell.
-
-## Clone only one sample (sparse checkout)
-
-You can clone this repository but **check out a single language folder** in your working tree (Git still fetches repo metadata, but you only materialize the paths you need):
+| Folder        | Stack                    | Detailed setup                          |
+|---------------|--------------------------|-----------------------------------------|
+| `typescript/` | Node / Express + OpenAPI | [typescript/README.md](typescript/README.md) |
+| `kotlin/`     | JVM / Gradle             | [kotlin/README.md](kotlin/README.md)   |
+| `java/`       | JVM / Gradle             | [java/README.md](java/README.md)         |
+| `csharp/`     | .NET                     | [csharp/README.md](csharp/README.md)   |
+| `go/`         | Go                       | [go/README.md](go/README.md)           |
 
 ```bash
-git clone --filter=blob:none --sparse https://github.com/sibabale/rails-sdk-samples.git
+cd typescript   # or go, java, kotlin, csharp
+```
+
+### 3. Install dependencies
+
+First-time installs can take a while (`npm install`, Gradle wrapper downloads, `dotnet restore`, and so on).
+
+| Language   | From the sample folder | Command (see language README for edge cases) |
+|------------|------------------------|-----------------------------------------------|
+| TypeScript | `typescript/`          | `npm install`                                 |
+| Go         | `go/`                  | `go mod download`                             |
+| Kotlin     | `kotlin/`              | `./gradlew --version`                         |
+| Java       | `java/`                | `./gradlew --version`                         |
+| C#         | `csharp/`              | `dotnet restore RailsSdkSample.sln`         |
+
+Samples may use **published** SDK packages or **local path / composite**. Each language README explains prerequisites and how to repoint paths for a standalone clone of this repo only.
+
+### 4. Run
+
+| Language   | From the sample folder | Command                                      |
+|------------|------------------------|----------------------------------------------|
+| TypeScript | `typescript/`          | `npm run dev`                                |
+| Go         | `go/`                  | `go run ./cmd/sample-api`                    |
+| Kotlin     | `kotlin/`              | `./gradlew run`                              |
+| Java       | `java/`                | `./gradlew run`                              |
+| C#         | `csharp/`              | `dotnet run --project src/RailsSdkSample/RailsSdkSample.csproj` |
+
+### 5. Open the UI
+
+With the server running, use the URLs in [When the sample is running](#when-the-sample-is-running) (Swagger at `/`, OpenAPI at `/openapi.json` unless that sample’s README says otherwise).
+
+---
+
+## When the sample is running
+
+| Language   | Folder        | Default `PORT` | Swagger UI                         | OpenAPI JSON                              |
+|------------|---------------|----------------|-------------------------------------|-------------------------------------------|
+| TypeScript | `typescript/` | 8081           | [http://localhost:8081/](http://localhost:8081/) | [http://localhost:8081/openapi.json](http://localhost:8081/openapi.json) |
+| Kotlin     | `kotlin/`     | 8081           | [http://localhost:8081/](http://localhost:8081/) | [http://localhost:8081/openapi.json](http://localhost:8081/openapi.json) |
+| Java       | `java/`       | 8081           | [http://localhost:8081/](http://localhost:8081/) | [http://localhost:8081/openapi.json](http://localhost:8081/openapi.json) |
+| C#         | `csharp/`     | 8081           | [http://localhost:8081/](http://localhost:8081/) | [http://localhost:8081/openapi.json](http://localhost:8081/openapi.json) |
+| Go         | `go/`         | 8083           | [http://localhost:8083/](http://localhost:8083/) | [http://localhost:8083/openapi.json](http://localhost:8083/openapi.json) |
+
+Use a different port with **`PORT`** in `.env` (where supported) or your shell, as described in each sample README.
+
+---
+
+## Stop or restart the sample
+
+| Situation | What to do |
+|-----------|------------|
+| Foreground server | **Ctrl+C** in the terminal where it is running. |
+| Port already in use | Pick another **`PORT`** or stop the other process bound to that port. |
+| Change env or code | Stop the process, edit `.env` or source, start the run command again (TypeScript `npm run dev` reloads on save). |
+
+---
+
+## Optional checks
+
+Run these **from the sample folder** after dependencies are installed.
+
+| Language   | Command | Notes |
+|------------|---------|--------|
+| TypeScript | `npm test` | Vitest |
+| Go         | `go test ./...` | Includes package tests under `go/` |
+| Java       | `./gradlew test` | JUnit |
+| C#         | `dotnet test RailsSdkSample.sln` | xUnit |
+| Kotlin     | — | No automated tests in this sample tree yet |
+
+---
+
+## Repository layout
+
+```
+rails-sdk-samples/
+│
+├── typescript/
+├── go/
+├── java/
+├── kotlin/
+├── csharp/
+│
+├── README.md
+├── CONTRIBUTING.md
+└── .gitignore
+```
+
+Each language folder contains its own **`README.md`**, dependency manifests, and (where used) **`.env.example`**.
+
+---
+
+## SDK dependencies
+
+Samples may use **published** packages (npm, Maven Central, NuGet, Go modules) or **local path / composite** wiring to a checked-out SDK. What applies depends on the language; each sample README explains prerequisites and how to override paths when you do not use the default layout (for example a standalone clone of this repo without the `src/rails-sdks/` tree from rails-core).
+
+---
+
+## Optional: clone only one sample (sparse checkout)
+
+You can clone this repository but **materialize a single language folder** in your working tree (Git still fetches repo metadata):
+
+```bash
+git clone --filter=blob:none --sparse https://github.com/railsinfra/rails-sdk-samples.git
 cd rails-sdk-samples
 git sparse-checkout set typescript
 ```
@@ -49,32 +153,38 @@ Replace `typescript` with `go`, `java`, `kotlin`, or `csharp` as needed. To add 
 git sparse-checkout add go
 ```
 
-**Note:** Samples are still wired to build against the generated SDKs inside the **Rails monorepo** (`src/rails-sdks/`). If you use a sparse clone **without** the parent repo, follow that language’s README for using **published** packages or adjust local paths.
-
-## Credentials (all samples)
-
-| Variable            | Required | Description |
-|---------------------|----------|-------------|
-| `RAILS_BASE_URL`    | Yes      | Rails API base URL. |
-| `RAILS_API_KEY`     | Yes      | API key from the Rails team or your dashboard. |
-| `RAILS_X_ENVIRONMENT` | No     | `sandbox` or `production` (default `sandbox`). |
-| `PORT`              | No       | Local server port (defaults differ by language; see table). |
-
-Copy `.env.example` to `.env` when the sample provides one, or export the variables in your shell.
-
-## Verify locally
-
-After you start a sample:
-
-- Open **`http://localhost:<port>/`** for **Swagger UI** (unless the sample README says otherwise).
-- Open **`http://localhost:<port>/openapi.json`** for the OpenAPI document.
-
-## Troubleshooting (dev TLS)
-
-If forwarded/proxy calls fail with **TLS / certificate / PKIX** errors against a dev host with a private CA, samples support a **dev-only** insecure flag (see each folder README). This does not relax TLS for all SDK paths unless noted.
+Sparse checkouts follow the same SDK rules as a full clone; use the language README if you need only one folder but a different SDK source (published vs local).
 
 ---
 
-## Rails maintainers — full API on your laptop
+## Credentials reference
 
-Bank integrators should **not** follow this. For Postgres, users service, accounts service, etc., use [src/docker-compose.sdk.yml](../../docker-compose.sdk.yml), [src/scripts/prepare-local-db.sh](../../scripts/prepare-local-db.sh), and READMEs under `src/api/`.
+| Variable              | Required | Description |
+|-----------------------|----------|-------------|
+| `RAILS_BASE_URL`      | Yes      | Use the value from **`.env.example`** for that sample; do not change unless Rails gave you a different base URL. |
+| `RAILS_API_KEY`       | Yes      | Create at [railsinfra.com](https://railsinfra.com) after sign-in; set in `.env` (never commit real values). |
+| `RAILS_X_ENVIRONMENT` | No       | `sandbox` or `production` (default `sandbox`). |
+| `PORT`                | No       | Local server port (defaults in [When the sample is running](#when-the-sample-is-running)). |
+
+---
+
+## Troubleshooting (dev TLS)
+
+If forwarded or proxy calls fail with **TLS / certificate / PKIX** errors against a dev host with a private CA, samples support a **dev-only** insecure flag (see each folder README). That does not relax TLS for all SDK paths unless noted.
+
+---
+
+## Need the full Rails API locally?
+
+**Bank integrators should not follow this path.** For a complete local stack (gateway, Postgres-backed services, users, accounts, ledger, and related pieces), use your **organization’s internal platform documentation** or run the open-source stack in **[rails-core](https://github.com/railsinfra/rails-core)** (`README.md` there covers `make dev`, env, and URLs). That setup is outside this samples repository.
+
+---
+
+## Docs and contributing
+
+- [typescript/README.md](typescript/README.md) — Node prerequisites, `file:` SDK override, run and TLS flags  
+- [go/README.md](go/README.md) — Go `replace` directive, optional CLI smoke test  
+- [java/README.md](java/README.md) — JDK, Gradle, TLS flags  
+- [kotlin/README.md](kotlin/README.md) — JDK, Gradle, TLS flags  
+- [csharp/README.md](csharp/README.md) — .NET SDK, tests, TLS flags  
+- [CONTRIBUTING.md](CONTRIBUTING.md) — how to change samples and open a PR  

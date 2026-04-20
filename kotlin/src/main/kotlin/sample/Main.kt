@@ -251,7 +251,7 @@ private fun normalizeBaseUrl(raw: String): String {
 }
 
 fun main() {
-    val baseUrl = normalizeBaseUrl(System.getenv("RAILS_BASE_URL") ?: "https://api.railsinfra.com/")
+    val baseUrl = normalizeBaseUrl(System.getenv("RAILS_BASE_URL") ?: "")
     val apiKey = System.getenv("RAILS_API_KEY") ?: ""
     val port = System.getenv("PORT")?.toIntOrNull() ?: 8081
 

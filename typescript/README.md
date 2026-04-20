@@ -36,8 +36,8 @@ cp .env.example .env
 
 Edit `.env` and set:
 
-- **`RAILS_BASE_URL`** — API host from Rails or your dashboard
-- **`RAILS_API_KEY`** — your API key  
+- **`RAILS_BASE_URL`** — use the value from `.env.example` (do not change unless onboarding gave a different host)
+- **`RAILS_API_KEY`** — sign in at https://railsinfra.com and create a server API key, then paste it here
 - Optional: **`PORT`** (default `8081`), **`RAILS_X_ENVIRONMENT`** (`sandbox` | `production`)
 
 ## Run
