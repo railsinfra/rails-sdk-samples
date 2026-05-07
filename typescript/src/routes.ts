@@ -1,6 +1,6 @@
 import type { Application, Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
-import Rails from '@railsinfra/rails-typescript';
+import Rails from '@railsinfra/rails';
 import type { RailsXEnvironment } from './config';
 import { HttpError } from './errors';
 
