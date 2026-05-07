@@ -3,7 +3,7 @@ import { join } from 'path';
 import cors from 'cors';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import swaggerUi from 'swagger-ui-express';
-import Rails from 'rails';
+import Rails from '@railsinfra/rails-typescript';
 import { loadConfig } from './config';
 import { createInsecureAwareProxyFetch, logTlsMode } from './fetch-proxy';
 import { toErrorBody } from './errors';
@@ -29,7 +29,7 @@ function main(): void {
   const client = new Rails({
     apiKey: cfg.apiKey,
     baseURL: cfg.baseURL,
-    defaultHeaders: { 'X-Environment': cfg.railsXEnvironment },
+    defaultHeaders: { 'X-Environment': 'sandbox' },
   });
 
   const app = express();
@@ -47,7 +47,6 @@ function main(): void {
     apiKey: cfg.apiKey,
     client,
     proxyFetch,
-    railsXEnvironment: cfg.railsXEnvironment,
   });
 
   app.get('/openapi.json', (_req: Request, res: Response) => {

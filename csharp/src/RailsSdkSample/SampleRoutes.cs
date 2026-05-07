@@ -44,7 +44,6 @@ public static class SampleRoutes
 
         async Task PostCreate(HttpContext ctx)
         {
-            var xEnv = ctx.Request.Headers["X-Environment"].FirstOrDefault() ?? "sandbox";
             var body = await new StreamReader(ctx.Request.Body).ReadToEndAsync(ctx.RequestAborted);
             await ForwardJson(
                 ctx,
@@ -56,14 +55,13 @@ public static class SampleRoutes
                 {
                     ["Content-Type"] = "application/json",
                     ["X-API-Key"] = d.ApiKey,
-                    ["X-Environment"] = xEnv,
+                    ["X-Environment"] = "sandbox",
                 }
             );
         }
 
         async Task GetListAccounts(HttpContext ctx)
         {
-            var xEnv = ctx.Request.Headers["X-Environment"].FirstOrDefault() ?? "sandbox";
             var qs = ctx.Request.QueryString.HasValue ? ctx.Request.QueryString.Value : "";
             await ForwardJson(
                 ctx,
@@ -71,7 +69,7 @@ public static class SampleRoutes
                 new Uri($"{root}/api/v1/accounts{qs}"),
                 HttpMethod.Get,
                 null,
-                new Dictionary<string, string> { ["X-API-Key"] = d.ApiKey, ["X-Environment"] = xEnv }
+                new Dictionary<string, string> { ["X-API-Key"] = d.ApiKey, ["X-Environment"] = "sandbox" }
             );
         }
 
@@ -84,15 +82,13 @@ public static class SampleRoutes
             if (t is "{}" or "null" or "")
                 throw new HttpError(400, "missing body");
             var idem = ctx.Request.Headers["Idempotency-Key"].FirstOrDefault() ?? GenIdempotencyKey("dep");
-            var xEnv = ctx.Request.Headers["X-Environment"].FirstOrDefault();
             var headers = new Dictionary<string, string>
             {
                 ["Content-Type"] = "application/json",
                 ["X-API-Key"] = d.ApiKey,
                 ["Idempotency-Key"] = idem,
+                ["X-Environment"] = "sandbox",
             };
-            if (xEnv is "sandbox" or "production")
-                headers["X-Environment"] = xEnv;
             await ForwardJson(
                 ctx,
                 d.ProxyHttp,
@@ -112,15 +108,13 @@ public static class SampleRoutes
             if (t is "{}" or "null" or "")
                 throw new HttpError(400, "missing body");
             var idem = ctx.Request.Headers["Idempotency-Key"].FirstOrDefault() ?? GenIdempotencyKey("xfr");
-            var xEnv = ctx.Request.Headers["X-Environment"].FirstOrDefault();
             var headers = new Dictionary<string, string>
             {
                 ["Content-Type"] = "application/json",
                 ["X-API-Key"] = d.ApiKey,
                 ["Idempotency-Key"] = idem,
+                ["X-Environment"] = "sandbox",
             };
-            if (xEnv is "sandbox" or "production")
-                headers["X-Environment"] = xEnv;
             await ForwardJson(
                 ctx,
                 d.ProxyHttp,
@@ -140,15 +134,13 @@ public static class SampleRoutes
             if (t is "{}" or "null" or "")
                 throw new HttpError(400, "missing body");
             var idem = ctx.Request.Headers["Idempotency-Key"].FirstOrDefault() ?? GenIdempotencyKey("wdr");
-            var xEnv = ctx.Request.Headers["X-Environment"].FirstOrDefault();
             var headers = new Dictionary<string, string>
             {
                 ["Content-Type"] = "application/json",
                 ["X-API-Key"] = d.ApiKey,
                 ["Idempotency-Key"] = idem,
+                ["X-Environment"] = "sandbox",
             };
-            if (xEnv is "sandbox" or "production")
-                headers["X-Environment"] = xEnv;
             await ForwardJson(
                 ctx,
                 d.ProxyHttp,

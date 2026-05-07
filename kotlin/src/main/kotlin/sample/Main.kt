@@ -1,12 +1,12 @@
 package sample
 
-import com.rails.api.client.okhttp.RailsOkHttpClient
-import com.rails.api.errors.RailsServiceException
-import com.rails.api.models.accounts.AccountCloseParams
-import com.rails.api.models.accounts.AccountRetrieveParams
-import com.rails.api.models.accounts.AccountUpdateStatusParams
-import com.rails.api.models.transactions.TransactionListByAccountParams
-import com.rails.api.models.transactions.TransactionRetrieveParams
+import com.railsinfra.client.okhttp.RailsOkHttpClient
+import com.railsinfra.errors.RailsServiceException
+import com.railsinfra.models.accounts.AccountCloseParams
+import com.railsinfra.models.accounts.AccountRetrieveParams
+import com.railsinfra.models.accounts.AccountUpdateStatusParams
+import com.railsinfra.models.transactions.TransactionListByAccountParams
+import com.railsinfra.models.transactions.TransactionRetrieveParams
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -45,17 +45,9 @@ import javax.net.ssl.X509TrustManager
 
 data class StatusBody(val status: String)
 
-/**
- * Prefer the incoming `X-Environment` header (e.g. Swagger), else `RAILS_X_ENVIRONMENT`, else sandbox.
- * TS sample uses the same idea; Go defaults invalid/missing header to sandbox. Forwarded routes already
- * set this header on `java.net.http` — SDK (`RailsOkHttpClient`) calls must add it per request.
- */
-private fun resolveXEnvironment(call: ApplicationCall): String {
-    val h = call.request.headers["X-Environment"]?.trim()?.lowercase()
-    if (h == "sandbox" || h == "production") return h
-    val d = System.getenv("RAILS_X_ENVIRONMENT")?.trim()?.lowercase()
-    return if (d == "production") "production" else "sandbox"
-}
+/** This sample always uses the sandbox environment for Rails account API calls. */
+@Suppress("UNUSED_PARAMETER")
+private fun resolveXEnvironment(call: ApplicationCall): String = "sandbox"
 
 private fun ktorStatusForUpstreamCode(code: Int): HttpStatusCode = when (code) {
     200 -> HttpStatusCode.OK
@@ -78,7 +70,7 @@ private fun ktorStatusForUpstreamCode(code: Int): HttpStatusCode = when (code) {
  * - env `RAILS_INSECURE_SSL=true`, or
  * - JVM system property `rails.insecure.ssl=true` (use `./gradlew run -PrailsInsecureSsl=true` if the Gradle daemon ignores your shell env).
  *
- * Dev/staging private CA only — never use in production.
+ * Dev/staging private CA only — do not enable for live traffic.
  */
 private val proxyHttpClient: HttpClient by lazy { buildInsecureAwareHttpClient() }
 
@@ -128,14 +120,13 @@ private fun proxiedStatus(code: Int): HttpStatusCode = when (code) {
 }
 
 private suspend fun forwardCreateAccount(call: ApplicationCall, baseUrl: String, apiKey: String) {
-    val xEnv = call.request.headers["X-Environment"] ?: "sandbox"
     val body = call.receiveText()
     val http = proxyHttpClient
     val req = HttpRequest.newBuilder()
         .uri(URI.create("${baseUrl.trimEnd('/')}/api/v1/accounts"))
         .header("Content-Type", "application/json")
         .header("X-API-Key", apiKey)
-        .header("X-Environment", xEnv)
+        .header("X-Environment", "sandbox")
         .POST(HttpRequest.BodyPublishers.ofString(body))
         .build()
     val res = http.send(req, HttpResponse.BodyHandlers.ofString())
@@ -150,15 +141,14 @@ private suspend fun forwardDeposit(call: ApplicationCall, baseUrl: String, apiKe
     val body = call.receiveText()
     if (body.isBlank()) return call.respondError(HttpStatusCode.BadRequest, "missing body")
     val idempotencyKey = call.request.headers["Idempotency-Key"] ?: genIdempotencyKey("dep")
-    val xEnv = call.request.headers["X-Environment"]
     val http = proxyHttpClient
     val reqBuilder = HttpRequest.newBuilder()
         .uri(URI.create("${baseUrl.trimEnd('/')}/api/v1/accounts/$id/deposit"))
         .header("Content-Type", "application/json")
         .header("X-API-Key", apiKey)
         .header("Idempotency-Key", idempotencyKey)
+        .header("X-Environment", "sandbox")
         .POST(HttpRequest.BodyPublishers.ofString(body))
-    if (xEnv == "sandbox" || xEnv == "production") reqBuilder.header("X-Environment", xEnv)
     val res = http.send(reqBuilder.build(), HttpResponse.BodyHandlers.ofString())
     call.respondText(res.body(), ContentType.Application.Json, proxiedStatus(res.statusCode()))
 }
@@ -168,15 +158,14 @@ private suspend fun forwardTransfer(call: ApplicationCall, baseUrl: String, apiK
     val body = call.receiveText()
     if (body.isBlank()) return call.respondError(HttpStatusCode.BadRequest, "missing body")
     val idempotencyKey = call.request.headers["Idempotency-Key"] ?: genIdempotencyKey("xfr")
-    val xEnv = call.request.headers["X-Environment"]
     val http = proxyHttpClient
     val reqBuilder = HttpRequest.newBuilder()
         .uri(URI.create("${baseUrl.trimEnd('/')}/api/v1/accounts/$id/transfer"))
         .header("Content-Type", "application/json")
         .header("X-API-Key", apiKey)
         .header("Idempotency-Key", idempotencyKey)
+        .header("X-Environment", "sandbox")
         .POST(HttpRequest.BodyPublishers.ofString(body))
-    if (xEnv == "sandbox" || xEnv == "production") reqBuilder.header("X-Environment", xEnv)
     val res = http.send(reqBuilder.build(), HttpResponse.BodyHandlers.ofString())
     call.respondText(res.body(), ContentType.Application.Json, proxiedStatus(res.statusCode()))
 }
@@ -186,15 +175,14 @@ private suspend fun forwardWithdraw(call: ApplicationCall, baseUrl: String, apiK
     val body = call.receiveText()
     if (body.isBlank()) return call.respondError(HttpStatusCode.BadRequest, "missing body")
     val idempotencyKey = call.request.headers["Idempotency-Key"] ?: genIdempotencyKey("wdr")
-    val xEnv = call.request.headers["X-Environment"]
     val http = proxyHttpClient
     val reqBuilder = HttpRequest.newBuilder()
         .uri(URI.create("${baseUrl.trimEnd('/')}/api/v1/accounts/$id/withdraw"))
         .header("Content-Type", "application/json")
         .header("X-API-Key", apiKey)
         .header("Idempotency-Key", idempotencyKey)
+        .header("X-Environment", "sandbox")
         .POST(HttpRequest.BodyPublishers.ofString(body))
-    if (xEnv == "sandbox" || xEnv == "production") reqBuilder.header("X-Environment", xEnv)
     val res = http.send(reqBuilder.build(), HttpResponse.BodyHandlers.ofString())
     call.respondText(res.body(), ContentType.Application.Json, proxiedStatus(res.statusCode()))
 }
@@ -226,13 +214,12 @@ private suspend fun rawPost(call: ApplicationCall, baseUrl: String, apiKey: Stri
 }
 
 private suspend fun forwardListAccounts(call: ApplicationCall, baseUrl: String, apiKey: String) {
-    val xEnv = call.request.headers["X-Environment"] ?: "sandbox"
     val qs = call.request.queryString().let { if (it.isEmpty()) "" else "?$it" }
     val http = proxyHttpClient
     val req = HttpRequest.newBuilder()
         .uri(URI.create("${baseUrl.trimEnd('/')}/api/v1/accounts$qs"))
         .header("X-API-Key", apiKey)
-        .header("X-Environment", xEnv)
+        .header("X-Environment", "sandbox")
         .GET()
         .build()
     val res = http.send(req, HttpResponse.BodyHandlers.ofString())
@@ -366,7 +353,7 @@ fun main() {
                 val params =
                     AccountUpdateStatusParams.builder()
                         .id(id)
-                        .status(com.rails.api.models.accounts.AccountUpdateStatusParams.Status.of(body.status))
+                        .status(com.railsinfra.models.accounts.AccountUpdateStatusParams.Status.of(body.status))
                         .putAdditionalHeader("X-Environment", xEnv)
                         .build()
                 val res = client.accounts().updateStatus(params)
@@ -379,7 +366,7 @@ fun main() {
                 val params =
                     AccountUpdateStatusParams.builder()
                         .id(id)
-                        .status(com.rails.api.models.accounts.AccountUpdateStatusParams.Status.of(body.status))
+                        .status(com.railsinfra.models.accounts.AccountUpdateStatusParams.Status.of(body.status))
                         .putAdditionalHeader("X-Environment", xEnv)
                         .build()
                 val res = client.accounts().updateStatus(params)
@@ -392,7 +379,7 @@ fun main() {
                 val params =
                     AccountUpdateStatusParams.builder()
                         .id(id)
-                        .status(com.rails.api.models.accounts.AccountUpdateStatusParams.Status.of(body.status))
+                        .status(com.railsinfra.models.accounts.AccountUpdateStatusParams.Status.of(body.status))
                         .putAdditionalHeader("X-Environment", xEnv)
                         .build()
                 val res = client.accounts().updateStatus(params)

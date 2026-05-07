@@ -3,16 +3,17 @@ namespace RailsSdkSample.Tests;
 public class SampleConfigTests
 {
     [Fact]
-    public void ResolveRailsXEnvironment_UsesSandboxOrProductionFromRequestWhenValid()
+    public void ResolveRailsXEnvironment_AlwaysSandbox()
     {
-        Assert.Equal("production", SampleConfig.ResolveRailsXEnvironment("production", "sandbox"));
+        Assert.Equal("sandbox", SampleConfig.ResolveRailsXEnvironment("production", "sandbox"));
         Assert.Equal("sandbox", SampleConfig.ResolveRailsXEnvironment("Sandbox", "production"));
+        Assert.Equal("sandbox", SampleConfig.ResolveRailsXEnvironment(null, "production"));
+        Assert.Equal("sandbox", SampleConfig.ResolveRailsXEnvironment("staging", "sandbox"));
     }
 
     [Fact]
-    public void ResolveRailsXEnvironment_FallsBackWhenHeaderMissingOrInvalid()
+    public void DefaultRailsXEnvironmentFromEnv_AlwaysSandbox()
     {
-        Assert.Equal("production", SampleConfig.ResolveRailsXEnvironment(null, "production"));
-        Assert.Equal("sandbox", SampleConfig.ResolveRailsXEnvironment("staging", "sandbox"));
+        Assert.Equal("sandbox", SampleConfig.DefaultRailsXEnvironmentFromEnv());
     }
 }

@@ -2,23 +2,21 @@
 
 ## What this is
 
-An HTTP server (and optional CLI) that calls the Rails API with the official Go SDK. You only configure **base URL** and **API key**.
+A small HTTP server that calls the Rails API with the official Go SDK (`github.com/railsinfra/rails-go`). You only configure the **API key**.
 
 ## Prerequisites
 
 - **Go** 1.22+
-- **Local SDK from source:** `go.mod` uses a `replace` that points at the generated Go SDK inside the **Rails monorepo** (`src/rails-sdks/sdks/rails-go`). That path only exists when this repo is checked out as part of that monorepo (for example at `src/rails-sdks/samples`). For a **standalone** clone of `rails-sdk-samples` only, either adjust `replace` to your SDK checkout or use a published module if available — see the [root SDK samples README](../README.md).
+- **Local SDK:** `go.mod` uses `replace` → `../../rails-sdks/rails-go` (sibling `rails-sdks/rails-go` next to this repo). Repoint or use a published module if your layout differs — see the [root SDK samples README](../README.md).
 
 ## Install dependencies
 
-From the **`rails-sdk-samples` repository root** (standalone clone or submodule — this standalone repo does not include the monorepo `src/` tree):
+From the **`rails-sdk-samples` repository root**:
 
 ```bash
 cd go
 go mod download
 ```
-
-*If you use the full Rails monorepo, this folder is at `src/rails-sdks/samples/go` from the monorepo root.*
 
 ## Credentials
 
@@ -26,33 +24,41 @@ go mod download
 cp .env.example .env
 ```
 
-Edit `.env`: set **`RAILS_API_KEY`** (create at https://railsinfra.com after sign-in), keep **`RAILS_BASE_URL`** as in `.env.example` unless onboarding gave a different host, optional **`PORT`** (default **8083** for the HTTP sample).
+Edit `.env` and set:
 
-Load env vars into your shell (example for bash):
+- **`RAILS_BASE_URL`** — use the value from `.env.example` (do not change unless onboarding gave a different host)
+- **`RAILS_API_KEY`** — sign in at https://railsinfra.com and create a server API key, then paste it here
+- Optional: **`PORT`** (default `8083`)
+
+Export variables into your environment before you run; this sample does not load `.env` files (for example, in bash: `set -a && source .env && set +a`).
+
+## Run
 
 ```bash
-set -a && source .env && set +a
+set -a && source .env && set +a && go run ./cmd/sample-api
 ```
 
-## Run (HTTP server + Swagger)
-
-```bash
-go run ./cmd/sample-api
-```
+With **`RAILS_SAMPLE_ACCOUNT_ID`** set in the environment, `go run .` runs an optional CLI smoke test.
 
 ## Verify
 
 - Swagger UI: **http://localhost:8083/** (or your `PORT`)
 - OpenAPI JSON: **http://localhost:8083/openapi.json**
 
-## Optional CLI smoke test
-
-When **`RAILS_SAMPLE_ACCOUNT_ID`** is set:
-
-```bash
-go run .
-```
-
 ## Troubleshooting
 
-For dev TLS handshake / PKIX errors against a private CA, set **`RAILS_INSECURE_SSL=true`** in `.env` (see `.env.example`). You should see a log line that trust-all TLS is ON. Dev/staging only.
+For dev TLS issues against a private CA, set **`RAILS_INSECURE_SSL=true`** (this sample only). You should see `[rails-go-sample] outbound HTTP client: trust-all TLS ON ...` in the log. Dev/staging only.
+
+### Module path issues
+
+If you encounter import errors, ensure the `go.mod` file has the correct module path and replace directive:
+
+```go
+module github.com/rails/sdk-samples/go
+
+require github.com/railsinfra/rails-go v0.0.0
+
+replace github.com/railsinfra/rails-go => ../../rails-sdks/rails-go
+```
+
+The local SDK should be at `../../rails-sdks/rails-go` relative to this sample directory (adjust the path if your SDK layout differs).

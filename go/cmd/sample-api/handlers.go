@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/rails/sdk-samples/go/apidocs"
-	"github.com/stainless-sdks/rails-go"
-	"github.com/stainless-sdks/rails-go/option"
-	"github.com/stainless-sdks/rails-go/packages/param"
+	"github.com/railsinfra/rails-go"
+	"github.com/railsinfra/rails-go/option"
+	"github.com/railsinfra/rails-go/packages/param"
 )
 
 type srv struct {
@@ -52,12 +52,8 @@ func (s *srv) health(w http.ResponseWriter, _ *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 
-func envOpts(r *http.Request) []option.RequestOption {
-	x := r.Header.Get("X-Environment")
-	if x != "sandbox" && x != "production" {
-		x = "sandbox"
-	}
-	return []option.RequestOption{option.WithHeader("X-Environment", x)}
+func envOpts(_ *http.Request) []option.RequestOption {
+	return []option.RequestOption{option.WithHeader("X-Environment", "sandbox")}
 }
 
 func (s *srv) requireAPIKey(w http.ResponseWriter, r *http.Request) bool {
@@ -85,16 +81,8 @@ func (s *srv) forward(w http.ResponseWriter, r *http.Request, method, upstreamPa
 
 	req.Header.Set("X-API-Key", s.apiKey)
 	switch headerMode {
-	case "envAlways":
-		x := r.Header.Get("X-Environment")
-		if x == "" {
-			x = "sandbox"
-		}
-		req.Header.Set("X-Environment", x)
-	case "envOptional":
-		if x := r.Header.Get("X-Environment"); x == "sandbox" || x == "production" {
-			req.Header.Set("X-Environment", x)
-		}
+	case "envAlways", "envOptional":
+		req.Header.Set("X-Environment", "sandbox")
 	default:
 		break
 	}

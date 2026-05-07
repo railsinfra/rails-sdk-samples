@@ -1,15 +1,15 @@
 package sample;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.rails.api.client.RailsClient;
-import com.rails.api.client.okhttp.RailsOkHttpClient;
-import com.rails.api.core.ObjectMappers;
-import com.rails.api.errors.RailsServiceException;
-import com.rails.api.models.accounts.AccountCloseParams;
-import com.rails.api.models.accounts.AccountRetrieveParams;
-import com.rails.api.models.accounts.AccountUpdateStatusParams;
-import com.rails.api.models.transactions.TransactionListByAccountParams;
-import com.rails.api.models.transactions.TransactionRetrieveParams;
+import com.railsinfra.client.RailsClient;
+import com.railsinfra.client.okhttp.RailsOkHttpClient;
+import com.railsinfra.core.ObjectMappers;
+import com.railsinfra.errors.RailsServiceException;
+import com.railsinfra.models.accounts.AccountCloseParams;
+import com.railsinfra.models.accounts.AccountRetrieveParams;
+import com.railsinfra.models.accounts.AccountUpdateStatusParams;
+import com.railsinfra.models.transactions.TransactionListByAccountParams;
+import com.railsinfra.models.transactions.TransactionRetrieveParams;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
@@ -281,14 +281,13 @@ public final class Main {
     }
 
     private static void forwardCreateAccount(HttpExchange ex, String baseUrl, String apiKey) throws Exception {
-        String xEnv = firstNonBlank(header(ex, "X-Environment"), "sandbox");
         byte[] body = ex.getRequestBody().readAllBytes();
         var req =
                 HttpRequest.newBuilder()
                         .uri(URI.create(trimSlash(baseUrl) + "/api/v1/accounts"))
                         .header("Content-Type", "application/json")
                         .header("X-API-Key", apiKey)
-                        .header("X-Environment", xEnv)
+                        .header("X-Environment", "sandbox")
                         .POST(HttpRequest.BodyPublishers.ofByteArray(body))
                         .build();
         var res = proxyHttpClient().send(req, HttpResponse.BodyHandlers.ofByteArray());
@@ -296,14 +295,13 @@ public final class Main {
     }
 
     private static void forwardListAccounts(HttpExchange ex, String baseUrl, String apiKey) throws Exception {
-        String xEnv = firstNonBlank(header(ex, "X-Environment"), "sandbox");
         String q = ex.getRequestURI().getQuery();
         String url = trimSlash(baseUrl) + "/api/v1/accounts" + (q != null && !q.isBlank() ? "?" + q : "");
         var req =
                 HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .header("X-API-Key", apiKey)
-                        .header("X-Environment", xEnv)
+                        .header("X-Environment", "sandbox")
                         .GET()
                         .build();
         var res = proxyHttpClient().send(req, HttpResponse.BodyHandlers.ofByteArray());
@@ -331,17 +329,14 @@ public final class Main {
             return;
         }
         String idem = firstNonBlank(header(ex, "Idempotency-Key"), genIdempotencyKey(idemPrefix));
-        String xEnv = header(ex, "X-Environment");
         var b =
                 HttpRequest.newBuilder()
                         .uri(URI.create(trimSlash(baseUrl) + "/api/v1/accounts/" + id + "/" + action))
                         .header("Content-Type", "application/json")
                         .header("X-API-Key", apiKey)
                         .header("Idempotency-Key", idem)
+                        .header("X-Environment", "sandbox")
                         .POST(HttpRequest.BodyPublishers.ofByteArray(body));
-        if ("sandbox".equalsIgnoreCase(xEnv) || "production".equalsIgnoreCase(xEnv)) {
-            b.header("X-Environment", xEnv);
-        }
         var res = proxyHttpClient().send(b.build(), HttpResponse.BodyHandlers.ofByteArray());
         respondBytes(ex, proxiedStatus(res.statusCode()), res.body(), "application/json");
     }
@@ -480,25 +475,9 @@ public final class Main {
         return path.isEmpty() ? "/" : path;
     }
 
-    /**
-     * Prefer the incoming {@code X-Environment} header (e.g. Swagger), else {@code RAILS_X_ENVIRONMENT}, else
-     * sandbox — same idea as the TypeScript sample; Go defaults invalid/missing header to sandbox. SDK calls must
-     * attach this per request; forwarded {@code java.net.http} routes already set the header.
-     */
-    private static String resolveXEnvironment(HttpExchange ex) {
-        String h = ex.getRequestHeaders().getFirst("X-Environment");
-        if (h != null) {
-            String t = h.trim().toLowerCase(Locale.ROOT);
-            if ("sandbox".equals(t) || "production".equals(t)) {
-                return t;
-            }
-        }
-        String d =
-                Optional.ofNullable(System.getenv("RAILS_X_ENVIRONMENT"))
-                        .map(String::trim)
-                        .map(s -> s.toLowerCase(Locale.ROOT))
-                        .orElse("");
-        return "production".equals(d) ? "production" : "sandbox";
+    /** This sample always uses the sandbox environment for Rails account API calls. */
+    private static String resolveXEnvironment(HttpExchange ignored) {
+        return "sandbox";
     }
 
     private static String trimSlash(String baseUrl) {

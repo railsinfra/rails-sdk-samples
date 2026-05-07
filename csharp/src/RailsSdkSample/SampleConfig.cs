@@ -15,22 +15,10 @@ public static class SampleConfig
         return new SampleSettings(baseUrl, apiKey, port, insecure, railsXEnvironment);
     }
 
-    public static string DefaultRailsXEnvironmentFromEnv()
-    {
-        var raw = (Environment.GetEnvironmentVariable("RAILS_X_ENVIRONMENT") ?? "sandbox").Trim().ToLowerInvariant();
-        return raw == "production" ? "production" : "sandbox";
-    }
+    public static string DefaultRailsXEnvironmentFromEnv() => "sandbox";
 
-    /// <summary>Prefer the incoming request header (Swagger UI), else the configured default.</summary>
-    public static string ResolveRailsXEnvironment(string? xEnvironmentHeader, string fallback)
-    {
-        var v = xEnvironmentHeader?.Trim().ToLowerInvariant() ?? "";
-        if (v == "production")
-            return "production";
-        if (v == "sandbox")
-            return "sandbox";
-        return fallback;
-    }
+    /// <summary>This sample always uses the sandbox environment for Rails account API calls.</summary>
+    public static string ResolveRailsXEnvironment(string? _, string __) => "sandbox";
 
     static string NormalizeBaseUrl(string raw)
     {

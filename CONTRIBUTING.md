@@ -6,7 +6,7 @@ Thanks for helping improve the reference apps. This document is intentionally sh
 
 1. Clone the repository and `cd rails-sdk-samples`.
 2. Choose a language folder (`typescript/`, `go/`, `java/`, `kotlin/`, or `csharp/`).
-3. Set credentials as in the root [README.md](README.md): **`RAILS_BASE_URL`** from `.env.example` (unless onboarding says otherwise), **`RAILS_API_KEY`** from https://railsinfra.com after sign-in, plus optional **`PORT`** / **`RAILS_X_ENVIRONMENT`** per that sample’s README.
+3. Set credentials as in the root [README.md](README.md): **`RAILS_BASE_URL`** from `.env.example` (unless onboarding says otherwise), **`RAILS_API_KEY`** from https://railsinfra.com after sign-in, plus optional **`PORT`** per that sample’s README.
 4. Install dependencies and start the sample using the commands in the language README.
 
 See the root [README.md](README.md) for a numbered quick start, default ports, and links to each sample.

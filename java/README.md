@@ -7,7 +7,7 @@ A small JVM server that calls the Rails API with the official Java SDK (OkHttp).
 ## Prerequisites
 
 - **JDK** 17+
-- **Local SDK from source:** Gradle `includeBuild` expects the generated Java SDK under **`src/rails-sdks/sdks/rails-java`** in the **Rails monorepo**, which exists when this repo lives inside that tree (for example at `src/rails-sdks/samples`). A standalone clone of `rails-sdk-samples` alone does not contain the monorepo `src/rails-sdks/` layout — use published packages or point the composite build at your SDK checkout; see the [root SDK samples README](../README.md).
+- **Local SDK from source:** Gradle `includeBuild` expects the generated Java SDK under **`rails-sdks/java`** in the **Rails monorepo** (path from repo root). A standalone clone of `rails-sdk-samples` alone does not contain that tree — use published packages or point the composite build at your SDK checkout; see the [root SDK samples README](../README.md).
 
 ## Install dependencies
 
@@ -18,7 +18,7 @@ cd java
 ./gradlew --version
 ```
 
-*Monorepo path from the Rails repo root: `src/rails-sdks/samples/java`.*
+*Monorepo path from the Rails repo root: `rails-sdk-samples/java`.*
 
 ## Credentials
 
@@ -29,7 +29,7 @@ export RAILS_BASE_URL='https://api.railsinfra.com'
 
 Sign in at https://railsinfra.com and create a server API key for **`RAILS_API_KEY`**. Use the same **`RAILS_BASE_URL`** rules as the [root README](../README.md#credentials-reference) (match other samples’ `.env.example` unless onboarding gave you a different host).
 
-Optional: **`RAILS_X_ENVIRONMENT`**, **`PORT`** (default `8081`).
+Optional: **`PORT`** (default `8081`).
 
 ## Run
 

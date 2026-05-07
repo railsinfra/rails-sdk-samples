@@ -2,7 +2,7 @@ module github.com/rails/sdk-samples/go
 
 go 1.22
 
-require github.com/stainless-sdks/rails-go v0.0.0
+require github.com/railsinfra/rails-go v0.0.0
 
 require (
 	github.com/tidwall/gjson v1.18.0 // indirect
@@ -11,4 +11,5 @@ require (
 	github.com/tidwall/sjson v1.2.5 // indirect
 )
 
-replace github.com/stainless-sdks/rails-go => ../../sdks/rails-go
+replace github.com/railsinfra/rails-go => ../../rails-sdks/rails-go
+

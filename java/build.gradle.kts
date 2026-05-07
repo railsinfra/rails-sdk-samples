@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.rails.api:rails-java:0.0.1")
+    implementation("com.railsinfra:rails-java:0.0.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.16.1")
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
