@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/rails/sdk-samples/go/apidocs"
-	"github.com/stainless-sdks/rails-go"
-	"github.com/stainless-sdks/rails-go/option"
-	"github.com/stainless-sdks/rails-go/packages/param"
+	"github.com/railsinfra/rails-go"
+	"github.com/railsinfra/rails-go/option"
+	"github.com/railsinfra/rails-go/packages/param"
 )
 
 type srv struct {

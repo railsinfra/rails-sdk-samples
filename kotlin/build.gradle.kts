@@ -12,7 +12,7 @@ application {
 }
 
 dependencies {
-    implementation("com.rails.api:rails-kotlin:0.0.1")
+    implementation("com.railsinfra:rails-kotlin:0.0.1")
 
     val ktor = "2.3.12"
     implementation("io.ktor:ktor-server-core-jvm:$ktor")

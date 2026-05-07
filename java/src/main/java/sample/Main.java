@@ -1,15 +1,15 @@
 package sample;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.rails.api.client.RailsClient;
-import com.rails.api.client.okhttp.RailsOkHttpClient;
-import com.rails.api.core.ObjectMappers;
-import com.rails.api.errors.RailsServiceException;
-import com.rails.api.models.accounts.AccountCloseParams;
-import com.rails.api.models.accounts.AccountRetrieveParams;
-import com.rails.api.models.accounts.AccountUpdateStatusParams;
-import com.rails.api.models.transactions.TransactionListByAccountParams;
-import com.rails.api.models.transactions.TransactionRetrieveParams;
+import com.railsinfra.client.RailsClient;
+import com.railsinfra.client.okhttp.RailsOkHttpClient;
+import com.railsinfra.core.ObjectMappers;
+import com.railsinfra.errors.RailsServiceException;
+import com.railsinfra.models.accounts.AccountCloseParams;
+import com.railsinfra.models.accounts.AccountRetrieveParams;
+import com.railsinfra.models.accounts.AccountUpdateStatusParams;
+import com.railsinfra.models.transactions.TransactionListByAccountParams;
+import com.railsinfra.models.transactions.TransactionRetrieveParams;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;

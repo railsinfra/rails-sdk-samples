@@ -1,12 +1,12 @@
 package sample
 
-import com.rails.api.client.okhttp.RailsOkHttpClient
-import com.rails.api.errors.RailsServiceException
-import com.rails.api.models.accounts.AccountCloseParams
-import com.rails.api.models.accounts.AccountRetrieveParams
-import com.rails.api.models.accounts.AccountUpdateStatusParams
-import com.rails.api.models.transactions.TransactionListByAccountParams
-import com.rails.api.models.transactions.TransactionRetrieveParams
+import com.railsinfra.client.okhttp.RailsOkHttpClient
+import com.railsinfra.errors.RailsServiceException
+import com.railsinfra.models.accounts.AccountCloseParams
+import com.railsinfra.models.accounts.AccountRetrieveParams
+import com.railsinfra.models.accounts.AccountUpdateStatusParams
+import com.railsinfra.models.transactions.TransactionListByAccountParams
+import com.railsinfra.models.transactions.TransactionRetrieveParams
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -353,7 +353,7 @@ fun main() {
                 val params =
                     AccountUpdateStatusParams.builder()
                         .id(id)
-                        .status(com.rails.api.models.accounts.AccountUpdateStatusParams.Status.of(body.status))
+                        .status(com.railsinfra.models.accounts.AccountUpdateStatusParams.Status.of(body.status))
                         .putAdditionalHeader("X-Environment", xEnv)
                         .build()
                 val res = client.accounts().updateStatus(params)
@@ -366,7 +366,7 @@ fun main() {
                 val params =
                     AccountUpdateStatusParams.builder()
                         .id(id)
-                        .status(com.rails.api.models.accounts.AccountUpdateStatusParams.Status.of(body.status))
+                        .status(com.railsinfra.models.accounts.AccountUpdateStatusParams.Status.of(body.status))
                         .putAdditionalHeader("X-Environment", xEnv)
                         .build()
                 val res = client.accounts().updateStatus(params)
@@ -379,7 +379,7 @@ fun main() {
                 val params =
                     AccountUpdateStatusParams.builder()
                         .id(id)
-                        .status(com.rails.api.models.accounts.AccountUpdateStatusParams.Status.of(body.status))
+                        .status(com.railsinfra.models.accounts.AccountUpdateStatusParams.Status.of(body.status))
                         .putAdditionalHeader("X-Environment", xEnv)
                         .build()
                 val res = client.accounts().updateStatus(params)

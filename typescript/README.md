@@ -2,7 +2,9 @@
 
 ## What this is
 
-A small Express server that calls the Rails API with the official TypeScript SDK (`rails` package). You only configure the **API key**.
+A small Express server that calls the Rails API with the official TypeScript SDK (**`@railsinfra/rails-typescript`** on npm). You only configure the **API key**.
+
+In this monorepo, **`package.json` pins the SDK with `file:../../rails-sdks/rails-typescript`** so `npm install` works before the scoped package hits the registry. When you consume the sample from a layout without that folder, switch the dependency to **`"@railsinfra/rails-typescript": "^0.2.10"`** (or the current version from the SDK README) and run `npm install`.
 
 ## Prerequisites
 

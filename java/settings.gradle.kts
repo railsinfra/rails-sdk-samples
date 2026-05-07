@@ -14,8 +14,8 @@ dependencyResolutionManagement {
     }
 }
 
-includeBuild("../../sdks/rails-java") {
+includeBuild("../../rails-sdks/java") {
     dependencySubstitution {
-        substitute(module("com.rails.api:rails-java")).using(project(":rails-java"))
+        substitute(module("com.railsinfra:rails-java")).using(project(":rails-java"))
     }
 }

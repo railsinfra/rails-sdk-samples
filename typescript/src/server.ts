@@ -3,7 +3,7 @@ import { join } from 'path';
 import cors from 'cors';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import swaggerUi from 'swagger-ui-express';
-import Rails from 'rails';
+import Rails from '@railsinfra/rails-typescript';
 import { loadConfig } from './config';
 import { createInsecureAwareProxyFetch, logTlsMode } from './fetch-proxy';
 import { toErrorBody } from './errors';

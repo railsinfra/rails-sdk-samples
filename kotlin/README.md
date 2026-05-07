@@ -7,7 +7,7 @@ A small JVM server that calls the Rails API with the official Kotlin SDK. You on
 ## Prerequisites
 
 - **JDK** 17+
-- **Local SDK from source:** Gradle `includeBuild` expects **`src/rails-sdks/sdks/rails-kotlin`** in the **Rails monorepo** (this repo is usually embedded at `src/rails-sdks/samples`). Standalone `rails-sdk-samples` clones do not include the monorepo `src/rails-sdks/` tree — see the [root SDK samples README](../README.md).
+- **Local SDK from source:** Gradle `includeBuild` expects **`src/rails-sdks/rails-kotlin`** in the **Rails monorepo** (this repo is usually embedded at `src/rails-sdks/samples`). Standalone `rails-sdk-samples` clones do not include the monorepo `src/rails-sdks/` tree — see the [root SDK samples README](../README.md).
 
 ## Install dependencies
 
@@ -43,6 +43,22 @@ Optional: **`PORT`** (default `8081`).
 - OpenAPI JSON: **http://localhost:8081/openapi.json**
 
 ## Troubleshooting
+
+### SDK path issues
+
+If you encounter build errors related to the local SDK, ensure the `settings.gradle.kts` file has the correct includeBuild path:
+
+```kotlin
+includeBuild("../../rails-sdks/rails-kotlin") {
+    dependencySubstitution {
+        substitute(module("com.railsinfra:rails-kotlin")).using(project(":rails-kotlin"))
+    }
+}
+```
+
+The local SDK should be at `../../rails-sdks/rails-kotlin` relative to this sample directory (adjust the path if your SDK layout differs).
+
+### TLS issues
 
 If forwarded `java.net.http` calls fail with **PKIX / SSLHandshakeException**, for **this sample only**:
 

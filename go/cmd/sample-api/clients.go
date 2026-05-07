@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/stainless-sdks/rails-go"
-	"github.com/stainless-sdks/rails-go/option"
+	"github.com/railsinfra/rails-go"
+	"github.com/railsinfra/rails-go/option"
 )
 
 func insecureTLS() bool {
