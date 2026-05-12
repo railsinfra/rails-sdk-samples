@@ -7,7 +7,7 @@ An ASP.NET Core app that calls the Rails API with the official C# SDK. You only 
 ## Prerequisites
 
 - **.NET SDK** 8+
-- **Local SDK from source:** the `.csproj` references **`src/rails-sdks/rails-csharp`** relative to the Rails monorepo layout (this repo at `src/rails-sdks/samples`). A standalone `rails-sdk-samples` clone has no monorepo `src/rails-sdks/` tree — repoint the project reference or use a published package; see the [root SDK samples README](../README.md).
+- **Local SDK from source:** the `.csproj` references **`../../../../rails-sdks/rails-csharp/src/Rails/Rails.csproj`** from the sample project file. In the default workspace layout, `rails-sdk-samples/` and `rails-sdks/` are sibling directories.
 
 ## Install dependencies
 
@@ -18,7 +18,7 @@ cd csharp
 dotnet restore RailsSdkSample.sln
 ```
 
-*Monorepo path from the Rails repo root: `src/rails-sdks/samples/csharp`.*
+*Default workspace path: `rails-sdk-samples/csharp` next to `rails-sdks/rails-csharp`.*
 
 ## Credentials
 

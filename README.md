@@ -55,7 +55,7 @@ First-time installs can take a while (`npm install`, Gradle wrapper downloads, `
 | Java       | `java/`                | `./gradlew --version`                         |
 | C#         | `csharp/`              | `dotnet restore RailsSdkSample.sln`         |
 
-Samples may use **published** SDK packages or **local path / composite**. Each language README explains prerequisites and how to repoint paths for a standalone clone of this repo only.
+TypeScript uses the published npm package. The other samples are wired to the sibling `rails-sdks/` checkout used by this workspace, so maintainers can test generated SDK changes locally before publishing those packages.
 
 ### 4. Run
 
@@ -133,7 +133,7 @@ Each language folder contains its own **`README.md`**, dependency manifests, and
 
 ## SDK dependencies
 
-Samples may use **published** packages (npm, Maven Central, NuGet, Go modules) or **local path / composite** wiring to a checked-out SDK. What applies depends on the language; each sample README explains prerequisites and how to override paths when you do not use the default layout (for example a standalone clone of this repo without the `src/rails-sdks/` tree from rails-core).
+For now, TypeScript is the published-package-first sample (`@railsinfra/rails`). Go, Java, Kotlin, and C# use local path / composite references to the sibling `rails-sdks/` checkout in this workspace.
 
 ---
 
