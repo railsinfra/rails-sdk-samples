@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/stainless-sdks/rails-go"
+	"github.com/railsinfra/rails-go"
 )
 
 func main() {
