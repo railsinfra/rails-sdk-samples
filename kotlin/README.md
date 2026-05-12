@@ -7,7 +7,7 @@ A small JVM server that calls the Rails API with the official Kotlin SDK. You on
 ## Prerequisites
 
 - **JDK** 17+
-- **Local SDK from source:** Gradle `includeBuild` expects **`src/rails-sdks/rails-kotlin`** in the **Rails monorepo** (this repo is usually embedded at `src/rails-sdks/samples`). Standalone `rails-sdk-samples` clones do not include the monorepo `src/rails-sdks/` tree — see the [root SDK samples README](../README.md).
+- **Local SDK from source:** Gradle `includeBuild` expects **`../../rails-sdks/rails-kotlin`** relative to this folder. In the default workspace layout, `rails-sdk-samples/` and `rails-sdks/` are sibling directories.
 
 ## Install dependencies
 
@@ -18,7 +18,7 @@ cd kotlin
 ./gradlew --version   # downloads wrapper if needed; first run may fetch dependencies
 ```
 
-*Monorepo path from the Rails repo root: `src/rails-sdks/samples/kotlin`.*
+*Default workspace path: `rails-sdk-samples/kotlin` next to `rails-sdks/rails-kotlin`.*
 
 ## Credentials
 

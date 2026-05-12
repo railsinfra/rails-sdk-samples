@@ -2,7 +2,7 @@
   "name": "rails-sdk-sample-typescript",
   "version": "1.0.0",
   "private": true,
-  "description": "Local demo server that calls the Rails API using RAILS_BASE_URL and RAILS_API_KEY (mirrors samples/kotlin patterns).",
+  "description": "Local demo server that calls the Rails API using RAILS_BASE_URL and RAILS_API_KEY.",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
