@@ -18,7 +18,32 @@ function loadOpenApiSpec(): Record<string, unknown> {
   }
   const raw = JSON.parse(readFileSync(openapiPath, 'utf8')) as Record<string, unknown>;
   const info = { ...(raw.info as object), title: 'Rails TypeScript SDK sample' };
-  return { ...raw, info };
+  const spec = { ...raw, info } as Record<string, any>;
+  spec.tags = [
+    ...((spec.tags as Array<Record<string, unknown>> | undefined) ?? []),
+    { name: 'Audit', description: 'SDK audit events' },
+  ];
+  spec.paths = {
+    ...(spec.paths ?? {}),
+    '/api/v1/audit/events': {
+      get: {
+        tags: ['Audit'],
+        summary: 'List audit events (TypeScript SDK)',
+        parameters: [
+          { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1 } },
+          { name: 'per_page', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100 } },
+          { name: 'action', in: 'query', schema: { type: 'string' } },
+          { name: 'target_type', in: 'query', schema: { type: 'string' } },
+          { name: 'target_id', in: 'query', schema: { type: 'string' } },
+          { name: 'outcome', in: 'query', schema: { type: 'string', enum: ['success', 'client_error', 'server_error'] } },
+          { name: 'from', in: 'query', schema: { type: 'string', format: 'date-time' } },
+          { name: 'to', in: 'query', schema: { type: 'string', format: 'date-time' } },
+        ],
+        responses: { 200: { description: 'Paginated audit events' } },
+      },
+    },
+  };
+  return spec;
 }
 
 function main(): void {
