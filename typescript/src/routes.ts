@@ -230,4 +230,22 @@ export function registerRoutes(app: Application, deps: RouteDeps): void {
 
   app.get('/api/accounts/:accountId/transactions', listByAccount);
   app.get('/api/v1/accounts/:accountId/transactions', listByAccount);
+
+  const listAuditEvents = asyncHandler(async (req: Request, res: Response) => {
+    const query: Record<string, string | number> = { environment: SANDBOX_ENV };
+    for (const key of ['page', 'per_page', 'action', 'target_type', 'target_id', 'outcome', 'from', 'to']) {
+      const value = req.query[key];
+      if (Array.isArray(value)) {
+        if (value[0] !== undefined) query[key] = String(value[0]);
+      } else if (value !== undefined) {
+        query[key] = String(value);
+      }
+    }
+
+    const data = await (client as any).audit.events.list(query, { headers: sdkEnvHeaders() });
+    res.json(data);
+  });
+
+  app.get('/api/audit/events', listAuditEvents);
+  app.get('/api/v1/audit/events', listAuditEvents);
 }
