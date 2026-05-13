@@ -47,28 +47,15 @@
         "format": "uuid",
         "example": "11111111-1111-4111-8111-111111111111"
       },
-      "CreateAccountHolder": {
+      "CreateAccount": {
         "type": "object",
-        "required": ["account_type", "email"],
+        "required": ["account_type", "email", "first_name", "last_name"],
         "properties": {
           "account_type": { "type": "string", "enum": ["checking", "saving"], "example": "checking" },
-          "email": { "type": "string", "format": "email", "example": "holder@bank.com" },
+          "email": { "type": "string", "format": "email", "example": "ada@example.com" },
           "first_name": { "type": "string", "example": "Ada" },
           "last_name": { "type": "string", "example": "Lovelace" },
-          "currency": { "type": "string", "example": "USD" },
-          "organization_id": { "type": "string", "format": "uuid", "nullable": true },
-          "admin_user_id": { "type": "string", "format": "uuid", "nullable": true }
-        }
-      },
-      "CreateAccountLegacy": {
-        "type": "object",
-        "required": ["account_type", "user_id"],
-        "properties": {
-          "account_type": { "type": "string", "enum": ["checking", "saving"], "example": "checking" },
-          "user_id": { "type": "string", "format": "uuid", "example": "22222222-2222-4222-8222-222222222222" },
-          "currency": { "type": "string", "example": "USD" },
-          "organization_id": { "type": "string", "format": "uuid" },
-          "admin_user_id": { "type": "string", "format": "uuid" }
+          "currency": { "type": "string", "example": "USD" }
         }
       },
       "UpdateAccountStatusBody": {
@@ -191,27 +178,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "oneOf": [
-                  { "$ref": "#/components/schemas/CreateAccountHolder" },
-                  { "$ref": "#/components/schemas/CreateAccountLegacy" }
-                ]
+                "$ref": "#/components/schemas/CreateAccount"
               },
               "examples": {
-                "holder": {
-                  "summary": "Holder (email) + API key path",
+                "existingUser": {
+                  "summary": "Existing SDK user email/name",
+                  "description": "Create the SDK user first, then create an account using that user's exact email, first_name, and last_name.",
                   "value": {
                     "account_type": "checking",
-                    "email": "holder@bank.com",
+                    "email": "ada@example.com",
                     "first_name": "Ada",
                     "last_name": "Lovelace",
-                    "currency": "USD"
-                  }
-                },
-                "legacyUser": {
-                  "summary": "Legacy (platform user_id)",
-                  "value": {
-                    "account_type": "checking",
-                    "user_id": "22222222-2222-4222-8222-222222222222",
                     "currency": "USD"
                   }
                 }
