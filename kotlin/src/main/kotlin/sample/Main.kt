@@ -304,7 +304,7 @@ fun main() {
 
             get("/health") { call.respondText("""{"status":"ok"}""", ContentType.Application.Json) }
 
-            // Forward create account so holder-based (email, first_name, last_name) and legacy (user_id) both work.
+            // Forward create account for an existing SDK user identified by email, first_name, and last_name.
             post("/api/accounts") { forwardCreateAccount(call, baseUrl, apiKey) }
             post("/api/v1/accounts") { forwardCreateAccount(call, baseUrl, apiKey) }
             get("/api/accounts") { forwardListAccounts(call, baseUrl, apiKey) }
